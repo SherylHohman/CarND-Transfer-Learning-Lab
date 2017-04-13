@@ -17,6 +17,7 @@
 #   - **In [35]**: I split Cifar10 training data into training and validation sets
 #   - **In [1]**:  was the the **traffic sign dataset**  
 #   - **In [21]**: commented out traffic sign dataset is now in this cell  
+#   - **In [16]**: calculation number of classes no longer relies on reading in a csv file of classnames !! (np.unique - waaay better) :-)
 #   
 # #### Ignore all references to traffic signs.   
 # #### Just re-using the model itself.  
@@ -74,14 +75,9 @@ def stratified_dataset_split(X_all, y_all):
     import numpy as np  
 
     def get_indexes_for_split(y_train, training_proportion=0.85):
-        '''
-        http://stackoverflow.com/a/27411795/5411817
-        Generates indices, making random stratified split into training set and  validation sets
-        Initial proportions of classes inside training and validation sets are preserved (stratified sampling).
-        y is any iterable indicating classes of each observation in the sample.
-        '''
-
+ 
         y_train=np.array(y_train)
+        # read class id,s
         class_ids = np.unique(y_train)
         
         # since class id's are know, create them all, initialize them all to empty sets
@@ -189,38 +185,22 @@ print('')  # hide echo of commented out code as string
 
 # ### Provide a Basic Summary of the Data Set Using Python, Numpy and/or Pandas
 
-# In[13]:
+# In[16]:
 
-### Replace each question mark with the appropriate value. 
-### Use python, pandas or numpy methods rather than hard coding the results
+import numpy as np
 
 # TODO: Number of training examples
 n_train = X_train_ORIG.shape[0]
 n_valid = X_valid_ORIG.shape[0]
 
-# TODO: Number of testing examples.
+# Number of testing examples.
 n_test = X_test_ORIG.shape[0]
 
-# TODO: What's the shape of an traffic sign image? 
+# What's the shape of an traffic sign image? 
 image_shape = X_train_ORIG.shape[1:]
 
-# TODO: How many unique classes/labels there are in the dataset.
-# read number of classes from signnames.csv
-def bufcount(filename):
-    #http://stackoverflow.com/a/850962/5411817
-    f = open(filename)
-    lines = 0
-    buf_size = 1024 * 1024
-    read_f = f.read # loop optimization
-
-    buf = read_f(buf_size)
-    while buf:
-        lines += buf.count('\n')
-        buf = read_f(buf_size)
-
-    return lines
-# first line in datafile is classnames: ClassID, SignName 
-num_classes = bufcount('./signnames.csv') - 1
+# How many unique classes/labels there are in the dataset.
+num_classes = len(np.unique(y_train_ORIG))
 
 print("Image data shape =", image_shape,"\n")
 print("Number of classes =", num_classes)
