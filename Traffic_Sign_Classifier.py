@@ -923,10 +923,49 @@ def evaluate_data(X_data, y_data):
 
 # 
 
-# In[40]:
+# In[52]:
+
+## SAMPLE DYNAMIC PLOT
+# http://stackoverflow.com/a/34486703/5411817
+
+# for dynamic plots in jupyter notebook
+get_ipython().magic('matplotlib notebook')
+
+import numpy as np
+import matplotlib.pyplot as plt
+import time
+
+def pltsin(ax, colors=['b']):
+    x = np.linspace(0,1,100)
+    if ax.lines:
+        for line in ax.lines:
+            line.set_xdata(x)
+            y = np.random.random(size=(100,1))
+            line.set_ydata(y)
+    else:
+        for color in colors:
+            y = np.random.random(size=(100,1))
+            ax.plot(x, y, color)
+    fig.canvas.draw()
+
+fig,ax = plt.subplots(1,1)
+ax.set_xlabel('X')
+ax.set_ylabel('Y')
+ax.set_xlim(0,1)
+ax.set_ylim(0,1)
+for f in range(5):
+    pltsin(ax, ['b', 'r'])
+    time.sleep(1)
+
+# return to state the remaining notebook cells expect
+get_ipython().magic('matplotlib inline')
+
+
+# In[56]:
 
 # TEMP TRUNCATE DATA FOR Alpha TESTING the code
-"""  
+
+print("hello")
 # truncate the training set to be just a bit larger than the BATCH_SIZE (so run at least 2 batches per epoch)
 tr = int(BATCH_SIZE * 1.2)
 # truncate validation (and training??) set to each be about 15% of the training set size
@@ -940,11 +979,133 @@ y_valid = y_valid[0:va]
 X_test  = X_test[0:te]
 y_test  = y_test[0:te]
 print('DATA TRUNCATED TO:', len(X_train), "SAMPLES for preliminary testing")
-"""  
+ 
 
-# EPOCHS = 4
-# print('EPOCHS TRUNCATED TO:', EPOCHS, "EPOCHS for preliminary testing")
-("")
+EPOCHS = 4
+print('EPOCHS TRUNCATED TO:', EPOCHS, "EPOCHS for preliminary testing")
+#
+
+
+# In[59]:
+
+##ATTEMPT TO WRITE ROUTINE FOR DYNAMIC UPDATING THE PLOT
+
+# for displaying a legend
+import matplotlib.patches as mpatches
+
+# Initializations for Dynamic Plot figures
+vloss, tloss, vaccu, taccu = [[],[],[],[]]
+epoch_x_axis = range(1, EPOCHS+1)
+
+# figure size in inches: width, height    
+fig = plt.figure(1, figsize=(7, 7))
+
+# to display legend
+blue_patch  = mpatches.Patch(color='blue',  label='Validation Set')
+red_patch   = mpatches.Patch(color='black', label='Training Set')
+black_patch = mpatches.Patch(color='red',   label='Minimum 93.00% Validation Accuracy Required')
+
+plt.subplot(311, title = "Loss vs Epoch")
+#plt.plot(epoch_x_axis, vloss, 'b', epoch_x_axis, tloss, 'k')
+
+#     plt.subplot(313, title="% Accuracy vs Epoch")
+plt.subplot(312, title="% Accuracy vs Epoch")
+req_accuracy = 0.9300
+#     plt.plot(epoch_x_axis, vaccu, 'b', epoch_x_axis, taccu, 'k')
+#     plt.axhline(req_accuracy, color='r')
+
+# overlay legend on "Accuracy" (the most spacious) subplot
+plt.legend(handles=[blue_patch, black_patch, red_patch])
+
+#     # zoomed in accuracy plot, highlighting variance around req_accuracy
+#     plt.subplot(312, title="% Accuracy vs Epoch, zoomed in ")
+#     plt.plot(epoch_x_axis, vaccu, 'b', epoch_x_axis, taccu, 'k')
+#     plt.axhline(req_accuracy, color='r')
+#     plt.ylim((.9000, 1.0100))
+
+# prevent overlapping of labels with subplots
+plt.tight_layout()
+plt.show()
+    
+def update_plot(epoch_x_axis, vloss, tloss, vaccu, taccu):
+    #update plots at each Epoch
+    plt.subplot(311, title = "Loss vs Epoch")
+    plt.plot(epoch_x_axis, vloss, 'b', epoch_x_axis, tloss, 'k')
+
+    plt.subplot(312, title="% Accuracy vs Epoch")
+    plt.plot(epoch_x_axis, vaccu, 'b', epoch_x_axis, taccu, 'k')
+    plt.axhline(req_accuracy, color='r')
+
+    
+    #plt.show()
+   
+    
+# train the model
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
+    num_examples = len(X_train)
+    training_stats = []
+    
+    print("Training...\n")
+    tstart = time.time()
+    for i in range(EPOCHS):
+        print("EPOCH: ", i+1, "of", EPOCHS, "EPOCHS")
+        X_train, y_train = shuffle(X_train, y_train)
+        t0 = time.time()
+        for batch_start in range(0, num_examples, BATCH_SIZE):
+            batch_end = batch_start + BATCH_SIZE
+            features = X_train[batch_start:batch_end]
+            labels   = y_train[batch_start:batch_end]
+            #train
+            sess.run(training_operation, feed_dict = {x:features, y:labels, keep_probability: DROPOUT_ON})
+#             if batch_start % 100 == 0:
+#                 print("        batch ", 1+batch_start//BATCH_SIZE, "of ", 1 + int(num_examples/BATCH_SIZE))#, "batches,  on EPOCH", i+1, "of", EPOCHS, "EPOCHS")
+                      
+        # evaluate on validation set, and print results of model from this EPOCH
+        print(X_valid.shape)
+        validation_accuracy, validation_loss = evaluate_data(X_valid, y_valid)
+        training_accuracy,   training_loss = evaluate_data(X_train, y_train)
+        
+#         # TODO: would be awesome to display live charts of these results, rather than this text output 
+#         #      (see charts in next cell)
+#         print("Time: {:.3f} minutes".format(float( (time.time()-t0) / 60 )))
+#         print("Validation Loss = {:.3f}".format(validation_loss))
+#         print(" (Training Loss = {:.3f})".format(training_loss))
+#         print("Validation Accuracy = {:.3f}".format(validation_accuracy))
+#         print(" (Training Accuracy = {:.3f})".format(training_accuracy))
+#         print()
+        
+        # round to nearest even number at 4th decimal place
+        #training_stats.append([np.around(validation_loss,4), np.around(training_loss,4), np.around(validation_accuracy,4), np.around(training_accuracy,4)])
+        training_stats.append([validation_loss, training_loss, validation_accuracy, training_accuracy])
+        np.savetxt('./training_stats/training_stats.tmp.txt', training_stats)
+        
+        # dynamically plot training_stats
+        update_plot(i, validation_loss, training_loss, validation_accuracy, training_accuracy)
+        
+    tend = time.time()
+    print("\nElapsed Training Time: {:.3f} minutes".format(float( (time.time()-tstart) / 60 )))
+    
+    # use current time stamp as id for model and training_stats filenames
+    model_timestamp = time.strftime("%y%m%d_%H%M")
+    
+    # save training_stats
+    filename = './training_stats/training_stats_' + model_timestamp + '.txt'
+    np.savetxt(filename, training_stats)
+    print("\ntraining_stats Saved As: ", filename, "\n")    
+
+    # save trained model
+    print("Saving model..")
+    saver = tf.train.Saver()
+    saver.save(sess, './trained_models/sh_trained_traffic_sign_classifier_' + model_timestamp)
+    print("Model Saved")
+    print()
+
+    
+    
+#plt.show()
+# return to state the remaining notebook cells expect
+#% matplotlib inline
 
 
 # In[43]:
@@ -1045,8 +1206,8 @@ with tf.Session() as sess:
 
 # In[51]:
 
-# assert("no need to display empty plot" == 
-#        "not retraining right now - just resetting the kernal (and running all except training and plotting cells)"
+# assert("THEN no need to display empty plot" == 
+#        "IF not retraining right now - just resetting the kernal (and running all except training and plotting cells)"
 #       )
 
 # for displaying a legend
