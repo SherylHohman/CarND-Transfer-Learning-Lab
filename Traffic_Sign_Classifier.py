@@ -1,6 +1,22 @@
 
 # coding: utf-8
 
+# ## Transfer Learning Lab part 2:  
+# # Cifar10 : Run Traffic Sign Classifier on Cifar10 dataset  
+# ### Compare performance of my Traffic Sign Model to Transfer Learning Model on the Cifar10 dataset   
+# *Transfer Learning Model will be done in a separate notebook, after completing this one  
+# 
+# Note: this dataset is much more diverse 
+# - it is expected to perform poorly on the cifar10 dataset,  
+# - as comparted to the traffic signs dataset.
+#     
+# This Notebook, all cells below this one, is a  
+# #### direct copy of the Traffic Sign Recognition Classifier.  
+# ### Cell **IN [1]**, contains the Only Change: 
+#   - I load the **Cifar10** dataset, 
+#   - instead of the **traffic sign dataset**.  
+# Keep this in mind, as read headlines, et al about traffic signs.
+
 # # Self-Driving Car Engineer Nanodegree
 # 
 # ## Deep Learning
@@ -22,8 +38,31 @@
 # ---
 # ## Step 0: Load The Data
 
-# In[1]:
+# In[7]:
 
+# download Cifar10 dataset
+from keras.datasets import cifar10
+
+(X_train, y_train), (X_test, y_test) = cifar10.load_data()
+
+# y_train.shape is 2d, (50000, 1). While Keras is smart enough to handle this
+# it's a good idea to flatten the array.
+
+y_train_ORIG = y_train.reshape(-1)
+y_test_ORIG = y_test.reshape(-1)
+
+## I need a validation set, else cannot train my model..
+#    np.train_test_split() (data, labels, test_size=0.20, random_state=42)
+#    could be used to randomly split the dataset
+# however, to preserve proportion of examples of each class in each dataset, I'll implement a
+#    stratified split:
+
+print("data loaded")
+print(X_train.shape, y_test_ORIG.shape)
+
+
+"""  
+# Traffic Sign Data:
 # Load pickled data
 import pickle
 
@@ -47,6 +86,8 @@ X_test_ORIG,  y_test_ORIG  =  test['features'],  test['labels']
 assert(len(X_train_ORIG) == len(y_train_ORIG))
 assert(len(X_valid_ORIG) == len(y_valid_ORIG))
 assert(len(X_test_ORIG)  == len(y_test_ORIG))
+"""
+print('')  # hide echo of commented out code as string
 
 
 # ---
