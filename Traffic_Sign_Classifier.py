@@ -923,12 +923,12 @@ def evaluate_data(X_data, y_data):
 
 # 
 
-# In[68]:
+# In[85]:
 
 from IPython import display
 
-tempx=np.asarray([])
-tempy=np.asarray([])
+tempx= []
+tempy= []
 for i in range(10):
     tempx = np.append(tempx, i)
     tempy = np.append(tempy, i**2)
@@ -939,6 +939,40 @@ for i in range(10):
     display.display(plt.gcf()) 
     time.sleep(0.5) 
     print(tempx, tempy)
+    print()
+    
+# prevent second copy of plot at completion of the cell/loop
+get_ipython().magic('matplotlib inline')
+
+print("done")
+
+
+# In[86]:
+
+## doesn't work. still don't know how to use this magic word
+"""
+%matplotlib notebook
+
+tempx= []
+tempy= []
+for i in range(10):
+    tempx = np.append(tempx, i)
+    tempy = np.append(tempy, i**2)
+    plt.gca().cla() 
+    plt.plot(tempx,tempy,label='test')
+    plt.legend()
+    plt.show()
+    #display.clear_output(wait=True)
+    #display.display(plt.gcf()) 
+    time.sleep(0.5) 
+    print(tempx, tempy)
+    
+# prevent second copy of plot at completion of the cell/loop
+% matplotlib inline  
+
+print("done")
+"""
+print()
 
 
 # In[52]:
