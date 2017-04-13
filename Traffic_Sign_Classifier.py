@@ -1043,7 +1043,7 @@ with tf.Session() as sess:
     print()
 
 
-# In[48]:
+# In[51]:
 
 # assert("no need to display empty plot" == 
 #        "not retraining right now - just resetting the kernal (and running all except training and plotting cells)"
@@ -1087,10 +1087,10 @@ blue_patch  = mpatches.Patch(color='blue',  label='Validation Set')
 red_patch   = mpatches.Patch(color='black', label='Training Set')
 black_patch = mpatches.Patch(color='red',   label='Minimum 93.00% Validation Accuracy Required')
 
-plt.subplot(311, title = "Loss")
+plt.subplot(311, title = "Loss vs Epoch")
 plt.plot(epoch_x_axis, vloss, 'b', epoch_x_axis, tloss, 'k')
 
-plt.subplot(313, title="Accuracy")
+plt.subplot(313, title="% Accuracy vs Epoch")
 req_accuracy = 0.9300
 plt.plot(epoch_x_axis, vaccu, 'b', epoch_x_axis, taccu, 'k')
 plt.axhline(req_accuracy, color='r')
@@ -1099,7 +1099,7 @@ plt.axhline(req_accuracy, color='r')
 plt.legend(handles=[blue_patch, black_patch, red_patch])
 
 # zoomed in accuracy plot, highlighting variance around req_accuracy
-plt.subplot(312, title="Accuracy, zoomed in")
+plt.subplot(312, title="% Accuracy vs Epoch, zoomed in ")
 plt.plot(epoch_x_axis, vaccu, 'b', epoch_x_axis, taccu, 'k')
 plt.axhline(req_accuracy, color='r')
 plt.ylim((.9000, 1.0100))
