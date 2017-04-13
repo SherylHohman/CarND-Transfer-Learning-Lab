@@ -11,11 +11,14 @@
 # - as comparted to the traffic signs dataset.
 #     
 # This Notebook, all cells below this one, is a  
-# #### direct copy of the Traffic Sign Recognition Classifier.  
-# ### Cell **IN [1]**, contains the Only Change: 
-#   - I load the **Cifar10** dataset, 
-#   - instead of the **traffic sign dataset**.  
-# Keep this in mind, as read headlines, et al about traffic signs.
+# #### direct copy of the Traffic Sign Recognition Classifier.    
+# ### Cell **IN [1]**, contains the Only Change:   
+#   - **In [20]**: I load the **Cifar10** dataset  
+#   - **In [1]**: was the the **traffic sign dataset**  
+#   - **In [19]**: commented out traffic sign dataset now resides here  
+#   
+# #### Ignore all references to traffic signs.   
+# #### Just re-using the model itself.  
 
 # # Self-Driving Car Engineer Nanodegree
 # 
@@ -38,39 +41,98 @@
 # ---
 # ## Step 0: Load The Data
 
-# In[7]:
+# In[24]:
 
 # download Cifar10 dataset
 from keras.datasets import cifar10
 
-(X_train, y_train), (X_test, y_test) = cifar10.load_data()
+(X_train, y_train), (X_valid, y_valid) = cifar10.load_data()
 
 # y_train.shape is 2d, (50000, 1). While Keras is smart enough to handle this
 # it's a good idea to flatten the array.
 
 y_train_ORIG = y_train.reshape(-1)
-y_test_ORIG = y_test.reshape(-1)
+y_valid_ORIG = y_valid.reshape(-1)
 
 ## I need a validation set, else cannot train my model..
-#    np.train_test_split() (data, labels, test_size=0.20, random_state=42)
+#    np.train_valid_split() (data, labels, valid_size=0.20, random_state=42)
 #    could be used to randomly split the dataset
 # however, to preserve proportion of examples of each class in each dataset, I'll implement a
 #    stratified split:
 
 print("data loaded")
-print(X_train.shape, y_test_ORIG.shape)
+print(X_train.shape, y_valid_ORIG.shape)
 
+def stratified_dataset_split(X_all, y_all):
+    
+    import numpy as np  
+
+    def get_indexes_for_split(y, train_proportion=0.85):
+        '''
+        http://stackoverflow.com/a/27411795/5411817
+        Generates indices, making random stratified split into training set and  validation sets
+        Initial proportions of classes inside training and validation sets are preserved (stratified sampling).
+        y is any iterable indicating classes of each observation in the sample.
+        '''
+
+        y=np.array(y)
+        training_indexes = np.zeros(len(y),dtype=bool)
+        validation_indexes = np.zeros(len(y),dtype=bool)
+        classes = np.unique(y)
+        for id in classes:
+            # creates matrix of class_id's, each row containing the indexes of the images in that class
+            image_indexes_by_class = np.nonzero(y==id)[0]
+            # shuffle the order of indexes/images within each class_id
+            np.random.shuffle(image_indexes_by_class)
+            # get number of images (for class id) that should be in training set. remaining will be in validation set
+            n = int(train_proportion*len(image_indexes_by_class))
+
+            # split each list into training and validation sets.
+            # since the lists are shuffled, just take the first n for train; remaining for valid/valid
+            training_indexes[image_indexes_by_class[:n]]   = True
+            validation_indexes[image_indexes_by_class[n:]] = True
+
+        return training_indexes, validation_indexes
+
+    #y = np.array([1,1,2,2,3,3])
+    train_indexes, valid_indexes = get_indexes_for_split(y_all, train_proportion=0.85)
+    print(train_indexes)
+    print( valid_indexes)
+    
+    X_train_new = []
+    y_train_new = []
+    for train_index in train_indexes:
+        X_train_new.append(X_all[train_index])
+        y_train_new.append(y_all[train_index])
+    X_valid_new=[]
+    y_valid_new=[]
+    for valid_index in train_indexes:
+        X_valid_new.append(X_all[valid_index])
+        y_valid_new.append(y_all[valid_index])
+        
+    assert( len(X_train_new) == len(y_train_new) )
+    assert( len(X_valid_new) == len(y_valid_new) )
+    return np.asarray(X_train_new), np.asarray(y_train_new), np.asarray(X_valid_new), np.asarray(y_valid_new)
+
+X_train_ORIG, y_train_ORIG, X_valid_ORIG, y_valid_ORIG = stratified_dataset_split(X_train, y_train)
+print(X_train_ORIG.shape, y_train_ORIG.shape, X_valid_ORIG.shape, y_valid_ORIG.shape)
+
+
+
+
+# In[21]:
 
 """  
-# Traffic Sign Data:
+### Traffic Sign Data:
+
 # Load pickled data
 import pickle
 
-# TODO: Fill this in based on where you saved the training and testing data
+# TODO: Fill this in based on where you saved the training and validation data
 
 training_file  = './traffic-signs-data/train.p'
 validation_file= './traffic-signs-data/valid.p'
-testing_file   = './traffic-signs-data/test.p'
+testing_file   = './traffic-signs-data/valid.p'
  
 with open(training_file, mode='rb') as f:
     train = pickle.load(f)
