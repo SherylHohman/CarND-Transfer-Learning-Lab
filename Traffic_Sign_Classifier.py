@@ -13,9 +13,10 @@
 # This Notebook, all cells below this one, is a  
 # #### direct copy of the Traffic Sign Recognition Classifier.    
 # ### Cell **IN [1]**, contains the Only Change:   
-#   - **In [20]**: I load the **Cifar10** dataset  
-#   - **In [1]**: was the the **traffic sign dataset**  
-#   - **In [19]**: commented out traffic sign dataset now resides here  
+#   - **In [25]**: I load the **Cifar10** dataset 
+#   - **In [35]**: I split Cifar10 training data into training and validation sets
+#   - **In [1]**:  was the the **traffic sign dataset**  
+#   - **In [21]**: commented out traffic sign dataset is now in this cell  
 #   
 # #### Ignore all references to traffic signs.   
 # #### Just re-using the model itself.  
@@ -41,26 +42,26 @@
 # ---
 # ## Step 0: Load The Data
 
-# In[25]:
+# In[4]:
 
 # download Cifar10 dataset
 from keras.datasets import cifar10
 
-(X_train, y_train), (X_valid, y_valid) = cifar10.load_data()
+(X_train_ORIG, y_train_ORIG), (X_test_ORIG, y_test_ORIG) = cifar10.load_data()
 
 # y_train.shape is 2d, (50000, 1). While Keras is smart enough to handle this
 # it's a good idea to flatten the array.
 
-y_train_ORIG = y_train.reshape(-1)
-y_valid_ORIG = y_valid.reshape(-1)
+# train will be split into train and valid sets, and named as X_train_ORIG, and X_test_ORIG, etc at that point
+y_train_ORIG = y_train_ORIG.reshape(-1)
+y_test_ORIG  = y_test_ORIG.reshape(-1)
 
 
 print("data loaded")
+print(X_train_ORIG.shape, y_test_ORIG.shape)
 
-print(X_train_ORIG.shape, y_valid_ORIG.shape)
 
-
-# In[35]:
+# In[11]:
 
 ## I need a validation set, else cannot train my model..
 #    np.train_valid_split() (data, labels, valid_size=0.20, random_state=42)
@@ -72,7 +73,7 @@ def stratified_dataset_split(X_all, y_all):
     
     import numpy as np  
 
-    def get_indexes_for_split(y, train_proportion=0.85):
+    def get_indexes_for_split(y_train, training_proportion=0.85):
         '''
         http://stackoverflow.com/a/27411795/5411817
         Generates indices, making random stratified split into training set and  validation sets
@@ -80,54 +81,68 @@ def stratified_dataset_split(X_all, y_all):
         y is any iterable indicating classes of each observation in the sample.
         '''
 
-        y=np.array(y)
-        is_training_index = np.zeros(len(y),dtype=bool)
-        is_validation_index = np.zeros(len(y),dtype=bool)
-        classes = np.unique(y)
-        for id in classes:
-            # creates matrix of class_id's, each row containing the indexes of the images in that class
-            #image_indexes_by_class = np.nonzero()[0]
-            image_indexes_by_class = np.nonzero(y==id)[0]
-            # shuffle the order of indexes/images within each class_id
-            np.random.shuffle(image_indexes_by_class)
-            # get number of images (for class id) that should be in training set. remaining will be in validation set
-            n = int(train_proportion*len(image_indexes_by_class))
-
-            # split each list into training and validation sets.
-            # since the lists are shuffled, just take the first n for train; remaining for valid/valid
-            is_training_index[image_indexes_by_class[:n]]   = True
-            is_validation_index[image_indexes_by_class[n:]] = True
-
-        return is_training_index, is_validation_index
+        y_train=np.array(y_train)
+        class_ids = np.unique(y_train)
+        
+        # since class id's are know, create them all, initialize them all to empty sets
+        image_indexes = {}
+        for class_id in class_ids:
+            image_indexes[class_id] = []
+            
+        # sort images (via index num) into lists keyed by class_id
+        for image_index in range(len(y_train)):
+            image_class_id = y_train[image_index]
+            image_indexes[image_class_id].append(image_index)
+            
+        # shuffle the indexes of images in each category
+        for class_id in class_ids:
+            np.random.shuffle(image_indexes[class_id])
+        
+        # siphon off training_proportion of each list into training set, remaining become validation set
+        training_set_indexes, validation_set_indexes = [ [], [] ]
+        for class_id in class_ids:
+            num_images_in_class = len(image_indexes[class_id])
+            num_training = int((training_proportion * num_images_in_class) // 1)
+            #num_validation = num_images_in_class - num_training
+            
+            training_set_indexes   += image_indexes[class_id][:num_training]  # or need to use extend?
+            validation_set_indexes += image_indexes[class_id][num_training:]
+            
+            tr = len(training_set_indexes)
+            va = len(validation_set_indexes)
+        print(tr/len(y_train), va/len(y_train), tr, va, tr + va, len(y_train)) 
+        
+        return training_set_indexes, validation_set_indexes
+        
 
     #y = np.array([1,1,2,2,3,3])
-    is_training_index, is_validing_index = get_indexes_for_split(y_all, train_proportion=0.85)
-    print(is_training_index)
-    print(is_validing_index)
+    training_indexes, validation_indexes = get_indexes_for_split(y_all, training_proportion=0.85)
+    #print(training_indexes)
+    #print(validing_indexes)
     
     X_train_new, y_train_new = ([],[])
-    for is_training_image in is_training_index:
-        if is_training_image:
-            X_train_new.append(X_all[is_training_index])
-            y_train_new.append(y_all[is_training_index])
-    print(X_tra
+    for training_index in training_indexes:
+            X_train_new.append(X_all[training_index])
+            y_train_new.append(y_all[training_index])
+          
     X_valid_new, y_valid_new = ([], [])
-    for is_training_image in is_training_index: 
-            X_valid_new.append(X_all[is_validation_index])
-            y_valid_new.append(y_all[is_validation_index])
-
-        
+    for validation_index in validation_indexes :
+            X_valid_new.append(X_all[validation_index])
+            y_valid_new.append(y_all[validation_index])
+       
     assert( len(X_train_new) == len(y_train_new) )
     assert( len(X_valid_new) == len(y_valid_new) )
     print("train: ", len(X_train_new)/len(X_all), "valid", len(X_valid_new)/len(X_all) )
     
     return np.asarray(X_train_new), np.asarray(y_train_new), np.asarray(X_valid_new), np.asarray(y_valid_new)
 
-X_train_ORIG, y_train_ORIG, X_valid_ORIG, y_valid_ORIG = stratified_dataset_split(X_train, y_train)
+# split X_train, y_train into training and validation sets
+X_train_ORIG, y_train_ORIG, X_valid_ORIG, y_valid_ORIG = stratified_dataset_split(X_train_ORIG, y_train_ORIG)
+
 print(X_train_ORIG.shape, y_train_ORIG.shape, X_valid_ORIG.shape, y_valid_ORIG.shape)
 
 
-# In[21]:
+# In[12]:
 
 """  
 ### Traffic Sign Data:
@@ -174,7 +189,7 @@ print('')  # hide echo of commented out code as string
 
 # ### Provide a Basic Summary of the Data Set Using Python, Numpy and/or Pandas
 
-# In[2]:
+# In[13]:
 
 ### Replace each question mark with the appropriate value. 
 ### Use python, pandas or numpy methods rather than hard coding the results
