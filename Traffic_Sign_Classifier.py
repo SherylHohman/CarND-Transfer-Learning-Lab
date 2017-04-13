@@ -43,7 +43,7 @@
 # ---
 # ## Step 0: Load The Data
 
-# In[4]:
+# In[17]:
 
 # download Cifar10 dataset
 from keras.datasets import cifar10
@@ -62,7 +62,7 @@ print("data loaded")
 print(X_train_ORIG.shape, y_test_ORIG.shape)
 
 
-# In[11]:
+# In[18]:
 
 ## I need a validation set, else cannot train my model..
 #    np.train_valid_split() (data, labels, valid_size=0.20, random_state=42)
@@ -138,7 +138,7 @@ X_train_ORIG, y_train_ORIG, X_valid_ORIG, y_valid_ORIG = stratified_dataset_spli
 print(X_train_ORIG.shape, y_train_ORIG.shape, X_valid_ORIG.shape, y_valid_ORIG.shape)
 
 
-# In[12]:
+# In[19]:
 
 """  
 ### Traffic Sign Data:
@@ -185,7 +185,7 @@ print('')  # hide echo of commented out code as string
 
 # ### Provide a Basic Summary of the Data Set Using Python, Numpy and/or Pandas
 
-# In[16]:
+# In[20]:
 
 import numpy as np
 
@@ -219,7 +219,7 @@ print("Number of testing examples    =", "{:5}".format(n_test),  ": {:4.1f}% of 
 # 
 # **NOTE:** It's recommended you start with something simple first. If you wish to do more, come back to it after you've completed the rest of the sections.
 
-# In[3]:
+# In[21]:
 
 ### Data exploration visualization code goes here.
 ### Feel free to use as many code cells as needed.
@@ -265,7 +265,7 @@ plt.show()
 print("figure saved as: 'data_plotted_image_distribution_amongst_classes.png'")
 
 
-# In[4]:
+# In[22]:
 
 # diplay list of sample images from training data set
 def display_images(images):
@@ -330,7 +330,7 @@ print("figure saved as: 'sample_traffic_signs_from_training_set.png'")
 
 # Use the code cell (or multiple code cells, if necessary) to implement the first step of your project.
 
-# In[5]:
+# In[23]:
 
 def test_reshaping_3D_into_4D():
     # grayscale images have no depth dimension
@@ -361,7 +361,7 @@ def test_reshaping_3D_into_4D():
 #test_reshaping_3D_into_4D()
 
 
-# In[6]:
+# In[24]:
 
 from skimage import color
 
@@ -407,7 +407,7 @@ fig = display_images([gray_train[1000]])
 print("figure saved as 'sample_grayscale-1channel_conversion.png'")
 
 
-# In[7]:
+# In[25]:
 
 # turn color data into grayscale image data
 from skimage import color
@@ -436,7 +436,7 @@ fig = display_images([X_train_gray[50], X_train_gray[500], X_train_gray[1000]])
 print("figure saved as 'sample_grayscale_conversions_single_channel.png'")
 
 
-# In[8]:
+# In[26]:
 
 # turn grayscale into 3channel rgb grayscale
 # (not ideal paramater-wise = duplicated data, but for shipping through my LeNet, it should remove shaping problems)
@@ -477,7 +477,7 @@ print("saved figure as 'sample_grayscale_1D_to_3D_conversion.png'")
 print("\nresulting images are darker and lighter than the single channel grayscale \n some ratios I've tried: 1/np.sqrt(3), 2*np.sqrt(3), (R:2/6 G:3/6 B:1/6) \n How do I create a 3-channel grayscale that looks visually identical to the 1-channel grayscale?")
 
 
-# In[9]:
+# In[27]:
 
 # Try per channel zero centering. Find mean for each channel, where the mean for that channel is across all training images
 # !! TERRIBLE RESULTS. tried a few learning_rates. NIX This technique !
@@ -531,7 +531,7 @@ def get_per_channel_mean_zero_centered_datasets(input_datasets):
 
 
 
-# In[10]:
+# In[28]:
 
 # Try per image zero centering. Find mean for each image, apply that mean to each channel in said image
 
@@ -582,7 +582,7 @@ def get_per_image_mean_centered_datasets(X_input_datasets):
     return X_output_datasets
 
 
-# In[11]:
+# In[29]:
 
 from sklearn.preprocessing import normalize
 from skimage import color
@@ -630,7 +630,7 @@ def get_normalized_images(image_sets):
     return [X_train_preprocessed, X_valid_preprocessed, X_test_preprocessed]
 
 
-# In[12]:
+# In[30]:
 
 # define training variables, constants
 
@@ -657,13 +657,13 @@ ksize = pool_strides
 
 # ### Model Architecture
 
-# In[13]:
+# In[31]:
 
 ### Define your architecture here.
 ### Feel free to use as many code cells as needed.
 
 
-# In[14]:
+# In[32]:
 
 """
 # This was for an attempt at running LeNet on 1-channel grayscale images. 
@@ -705,7 +705,7 @@ def get_conv_layer_given_filter_shape(x, filter_shape):
 ("")
 
 
-# In[15]:
+# In[33]:
 
 def get_conv_layer(x, conv_output_shape, pool_output_shape):
     input_height,  input_width,  input_depth  = x.get_shape().as_list()[1:]
@@ -743,7 +743,7 @@ def get_conv_layer(x, conv_output_shape, pool_output_shape):
     return conv_layer
 
 
-# In[16]:
+# In[34]:
 
 def get_fcc_layer(prev_layer, output_length):
     input_length  = prev_layer.get_shape().as_list()[1]
@@ -760,7 +760,7 @@ def get_fcc_layer(prev_layer, output_length):
     return fcc_layer
 
 
-# In[17]:
+# In[35]:
 
 from tensorflow.contrib.layers import flatten
 
@@ -796,7 +796,7 @@ def LeNet(x):
 # A validation set can be used to assess how well the model is performing. A low accuracy on the training and validation
 # sets imply underfitting. A high accuracy on the training set but low accuracy on the validation set implies overfitting.
 
-# In[18]:
+# In[36]:
 
 ### Train your model here.
 ### Calculate and report the accuracy on the training and validation set.
@@ -805,7 +805,7 @@ def LeNet(x):
 ### Feel free to use as many code cells as needed.
 
 
-# In[19]:
+# In[37]:
 
 ### Preprocess the data here. Preprocessing steps could include normalization, converting to grayscale, etc.
 ### Feel free to use as many code cells as needed.
@@ -822,7 +822,7 @@ X_valid_SHUFFLED, y_valid_SHUFFLED = shuffle(X_valid_ORIG, y_valid_ORIG)
     # don't need to shuffle test data
 
 
-# In[20]:
+# In[38]:
 
 ## initialize
 
@@ -892,7 +892,7 @@ accuracy_calculation  = tf.reduce_mean(tf.cast(prediction_is_correct, tf.float32
 training_stats = []
 
 
-# In[21]:
+# In[39]:
 
 # evaluation routine
 def evaluate_data(X_data, y_data):
@@ -923,7 +923,7 @@ def evaluate_data(X_data, y_data):
 
 # 
 
-# In[22]:
+# In[40]:
 
 # TEMP TRUNCATE DATA FOR Alpha TESTING the code
 """  
@@ -947,13 +947,13 @@ print('DATA TRUNCATED TO:', len(X_train), "SAMPLES for preliminary testing")
 ("")
 
 
-# In[23]:
+# In[43]:
 
 import time
 
-assert("no, Don't Retrain Model !"  ==  
-       "Re-Running cells for later sections of the notebook. AND Want To Use The already TRAINED NETWORK"
-      )
+#assert("no, Don't Retrain Model !"  ==  
+#        "Re-Running cells for later sections of the notebook. AND Want To Use The already TRAINED NETWORK"
+#       )
 
 # train our model
 with tf.Session() as sess:
@@ -1021,11 +1021,33 @@ with tf.Session() as sess:
     print()
 
 
-# In[26]:
+# In[47]:
 
-assert("no need to display empty plot" == 
-       "not retraining right now - just resetting the kernal (and running all except training and plotting cells)"
-      )
+with tf.Session() as sess:
+ 
+    # save trained model
+    print("Saving model..")
+    saver = tf.train.Saver()
+    saver.save(sess, './trained_models/sh_trained_traffic_sign_classifier_' + model_timestamp)
+    print("Model Saved")
+    print()
+
+    if validation_accuracy >= 0.93:
+        print(" !! Congratulations!! Your model meets the minimum required Validation Accuracy of 0.93")
+        print("   You may now run your model on the Test Set :-)")
+    else:
+        print("KEEP WORKING ON YOUR MODEL to acheive a minimum Validation Accuracy of 0.93")
+        print("underfitting if:  low accuracy on training and low accuracy on validation sets.")
+        print("overfitting  if: high accuracy on training but low accuracy on validation sets.")
+
+    print()
+
+
+# In[48]:
+
+# assert("no need to display empty plot" == 
+#        "not retraining right now - just resetting the kernal (and running all except training and plotting cells)"
+#       )
 
 # for displaying a legend
 import matplotlib.patches as mpatches
@@ -1045,7 +1067,7 @@ def read_training_stats_from_file():
     return [model_timestamp, training_stats_read_from_disk]
 
 # Uncomment, and update "model_timestamp" Inside the function, to Read the training_stats from disk
-model_timestamp, training_stats = read_training_stats_from_file()
+#model_timestamp, training_stats = read_training_stats_from_file()
 
 
 num_epochs = len(training_stats)
