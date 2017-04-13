@@ -11796,7 +11796,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="prompt input_prompt">In&nbsp;[25]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># download Cifar10 dataset</span>
@@ -11810,14 +11810,42 @@ div#notebook {
 <span class="n">y_train_ORIG</span> <span class="o">=</span> <span class="n">y_train</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">y_valid_ORIG</span> <span class="o">=</span> <span class="n">y_valid</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
-<span class="c1">## I need a validation set, else cannot train my model..</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;data loaded&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">X_train_ORIG</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">y_valid_ORIG</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>data loaded
+(50000, 32, 32, 3) (10000,)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[35]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">## I need a validation set, else cannot train my model..</span>
 <span class="c1">#    np.train_valid_split() (data, labels, valid_size=0.20, random_state=42)</span>
 <span class="c1">#    could be used to randomly split the dataset</span>
 <span class="c1"># however, to preserve proportion of examples of each class in each dataset, I&#39;ll implement a</span>
 <span class="c1">#    stratified split:</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;data loaded&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">y_valid_ORIG</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">stratified_dataset_split</span><span class="p">(</span><span class="n">X_all</span><span class="p">,</span> <span class="n">y_all</span><span class="p">):</span>
     
@@ -11832,11 +11860,12 @@ div#notebook {
 <span class="sd">        &#39;&#39;&#39;</span>
 
         <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-        <span class="n">training_indexes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-        <span class="n">validation_indexes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">is_training_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">is_validation_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
         <span class="n">classes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
         <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">classes</span><span class="p">:</span>
             <span class="c1"># creates matrix of class_id&#39;s, each row containing the indexes of the images in that class</span>
+            <span class="c1">#image_indexes_by_class = np.nonzero()[0]</span>
             <span class="n">image_indexes_by_class</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">y</span><span class="o">==</span><span class="nb">id</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="c1"># shuffle the order of indexes/images within each class_id</span>
             <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">image_indexes_by_class</span><span class="p">)</span>
@@ -11845,29 +11874,32 @@ div#notebook {
 
             <span class="c1"># split each list into training and validation sets.</span>
             <span class="c1"># since the lists are shuffled, just take the first n for train; remaining for valid/valid</span>
-            <span class="n">training_indexes</span><span class="p">[</span><span class="n">image_indexes_by_class</span><span class="p">[:</span><span class="n">n</span><span class="p">]]</span>   <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">validation_indexes</span><span class="p">[</span><span class="n">image_indexes_by_class</span><span class="p">[</span><span class="n">n</span><span class="p">:]]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">is_training_index</span><span class="p">[</span><span class="n">image_indexes_by_class</span><span class="p">[:</span><span class="n">n</span><span class="p">]]</span>   <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">is_validation_index</span><span class="p">[</span><span class="n">image_indexes_by_class</span><span class="p">[</span><span class="n">n</span><span class="p">:]]</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="k">return</span> <span class="n">training_indexes</span><span class="p">,</span> <span class="n">validation_indexes</span>
+        <span class="k">return</span> <span class="n">is_training_index</span><span class="p">,</span> <span class="n">is_validation_index</span>
 
     <span class="c1">#y = np.array([1,1,2,2,3,3])</span>
-    <span class="n">train_indexes</span><span class="p">,</span> <span class="n">valid_indexes</span> <span class="o">=</span> <span class="n">get_indexes_for_split</span><span class="p">(</span><span class="n">y_all</span><span class="p">,</span> <span class="n">train_proportion</span><span class="o">=</span><span class="mf">0.85</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">train_indexes</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span> <span class="n">valid_indexes</span><span class="p">)</span>
+    <span class="n">is_training_index</span><span class="p">,</span> <span class="n">is_validing_index</span> <span class="o">=</span> <span class="n">get_indexes_for_split</span><span class="p">(</span><span class="n">y_all</span><span class="p">,</span> <span class="n">train_proportion</span><span class="o">=</span><span class="mf">0.85</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">is_training_index</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">is_validing_index</span><span class="p">)</span>
     
-    <span class="n">X_train_new</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">y_train_new</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">train_index</span> <span class="ow">in</span> <span class="n">train_indexes</span><span class="p">:</span>
-        <span class="n">X_train_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">X_all</span><span class="p">[</span><span class="n">train_index</span><span class="p">])</span>
-        <span class="n">y_train_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_all</span><span class="p">[</span><span class="n">train_index</span><span class="p">])</span>
-    <span class="n">X_valid_new</span><span class="o">=</span><span class="p">[]</span>
-    <span class="n">y_valid_new</span><span class="o">=</span><span class="p">[]</span>
-    <span class="k">for</span> <span class="n">valid_index</span> <span class="ow">in</span> <span class="n">train_indexes</span><span class="p">:</span>
-        <span class="n">X_valid_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">X_all</span><span class="p">[</span><span class="n">valid_index</span><span class="p">])</span>
-        <span class="n">y_valid_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_all</span><span class="p">[</span><span class="n">valid_index</span><span class="p">])</span>
+    <span class="n">X_train_new</span><span class="p">,</span> <span class="n">y_train_new</span> <span class="o">=</span> <span class="p">([],[])</span>
+    <span class="k">for</span> <span class="n">is_training_image</span> <span class="ow">in</span> <span class="n">is_training_index</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">is_training_image</span><span class="p">:</span>
+            <span class="n">X_train_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">X_all</span><span class="p">[</span><span class="n">is_training_index</span><span class="p">])</span>
+            <span class="n">y_train_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_all</span><span class="p">[</span><span class="n">is_training_index</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">X_tra</span>
+    <span class="n">X_valid_new</span><span class="p">,</span> <span class="n">y_valid_new</span> <span class="o">=</span> <span class="p">([],</span> <span class="p">[])</span>
+    <span class="k">for</span> <span class="n">is_training_image</span> <span class="ow">in</span> <span class="n">is_training_index</span><span class="p">:</span> 
+            <span class="n">X_valid_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">X_all</span><span class="p">[</span><span class="n">is_validation_index</span><span class="p">])</span>
+            <span class="n">y_valid_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y_all</span><span class="p">[</span><span class="n">is_validation_index</span><span class="p">])</span>
+
         
     <span class="k">assert</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">X_train_new</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_train_new</span><span class="p">)</span> <span class="p">)</span>
     <span class="k">assert</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">X_valid_new</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_valid_new</span><span class="p">)</span> <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;train: &quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X_train_new</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">X_all</span><span class="p">),</span> <span class="s2">&quot;valid&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X_valid_new</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">X_all</span><span class="p">)</span> <span class="p">)</span>
+    
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">X_train_new</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_train_new</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">X_valid_new</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_valid_new</span><span class="p">)</span>
 
 <span class="n">X_train_ORIG</span><span class="p">,</span> <span class="n">y_train_ORIG</span><span class="p">,</span> <span class="n">X_valid_ORIG</span><span class="p">,</span> <span class="n">y_valid_ORIG</span> <span class="o">=</span> <span class="n">stratified_dataset_split</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
@@ -11884,28 +11916,31 @@ div#notebook {
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>data loaded
-(50000, 32, 32, 3) (10000,)
-[ True  True  True ...,  True  True  True]
-[False False False ..., False False False]
+<pre>[ True  True  True ..., False  True  True]
+[False False False ...,  True False False]
 </pre>
 </div>
 </div>
 
 <div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>C:\Users\i\Anaconda3\envs\carnd-term1\lib\site-packages\ipykernel\__main__.py:60: VisibleDeprecationWarning: using a boolean instead of an integer will result in an error in the future
-C:\Users\i\Anaconda3\envs\carnd-term1\lib\site-packages\ipykernel\__main__.py:61: VisibleDeprecationWarning: using a boolean instead of an integer will result in an error in the future
-C:\Users\i\Anaconda3\envs\carnd-term1\lib\site-packages\ipykernel\__main__.py:65: VisibleDeprecationWarning: using a boolean instead of an integer will result in an error in the future
-C:\Users\i\Anaconda3\envs\carnd-term1\lib\site-packages\ipykernel\__main__.py:66: VisibleDeprecationWarning: using a boolean instead of an integer will result in an error in the future
-</pre>
-</div>
-</div>
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">MemoryError</span>                               Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-35-e27c9ef60835&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-intense-fg ansi-bold">     59</span>     <span class="ansi-green-intense-fg ansi-bold">return</span> np<span class="ansi-yellow-intense-fg ansi-bold">.</span>asarray<span class="ansi-yellow-intense-fg ansi-bold">(</span>X_train_new<span class="ansi-yellow-intense-fg ansi-bold">)</span><span class="ansi-yellow-intense-fg ansi-bold">,</span> np<span class="ansi-yellow-intense-fg ansi-bold">.</span>asarray<span class="ansi-yellow-intense-fg ansi-bold">(</span>y_train_new<span class="ansi-yellow-intense-fg ansi-bold">)</span><span class="ansi-yellow-intense-fg ansi-bold">,</span> np<span class="ansi-yellow-intense-fg ansi-bold">.</span>asarray<span class="ansi-yellow-intense-fg ansi-bold">(</span>X_valid_new<span class="ansi-yellow-intense-fg ansi-bold">)</span><span class="ansi-yellow-intense-fg ansi-bold">,</span> np<span class="ansi-yellow-intense-fg ansi-bold">.</span>asarray<span class="ansi-yellow-intense-fg ansi-bold">(</span>y_valid_new<span class="ansi-yellow-intense-fg ansi-bold">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     60</span> 
+<span class="ansi-green-fg">---&gt; 61</span><span class="ansi-red-fg"> </span>X_train_ORIG<span class="ansi-yellow-intense-fg ansi-bold">,</span> y_train_ORIG<span class="ansi-yellow-intense-fg ansi-bold">,</span> X_valid_ORIG<span class="ansi-yellow-intense-fg ansi-bold">,</span> y_valid_ORIG <span class="ansi-yellow-intense-fg ansi-bold">=</span> stratified_dataset_split<span class="ansi-yellow-intense-fg ansi-bold">(</span>X_train<span class="ansi-yellow-intense-fg ansi-bold">,</span> y_train<span class="ansi-yellow-intense-fg ansi-bold">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     62</span> print<span class="ansi-yellow-intense-fg ansi-bold">(</span>X_train_ORIG<span class="ansi-yellow-intense-fg ansi-bold">.</span>shape<span class="ansi-yellow-intense-fg ansi-bold">,</span> y_train_ORIG<span class="ansi-yellow-intense-fg ansi-bold">.</span>shape<span class="ansi-yellow-intense-fg ansi-bold">,</span> X_valid_ORIG<span class="ansi-yellow-intense-fg ansi-bold">.</span>shape<span class="ansi-yellow-intense-fg ansi-bold">,</span> y_valid_ORIG<span class="ansi-yellow-intense-fg ansi-bold">.</span>shape<span class="ansi-yellow-intense-fg ansi-bold">)</span>
 
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>(50000, 32, 32, 3) (50000, 1) (50000, 32, 32, 3) (50000, 1)
-</pre>
+<span class="ansi-green-fg">&lt;ipython-input-35-e27c9ef60835&gt;</span> in <span class="ansi-cyan-fg">stratified_dataset_split</span><span class="ansi-blue-fg">(X_all, y_all)</span>
+<span class="ansi-green-intense-fg ansi-bold">     45</span>     <span class="ansi-green-intense-fg ansi-bold">for</span> is_training_image <span class="ansi-green-intense-fg ansi-bold">in</span> is_training_index<span class="ansi-yellow-intense-fg ansi-bold">:</span>
+<span class="ansi-green-intense-fg ansi-bold">     46</span>         <span class="ansi-green-intense-fg ansi-bold">if</span> is_training_image<span class="ansi-yellow-intense-fg ansi-bold">:</span>
+<span class="ansi-green-fg">---&gt; 47</span><span class="ansi-red-fg">             </span>X_train_new<span class="ansi-yellow-intense-fg ansi-bold">.</span>append<span class="ansi-yellow-intense-fg ansi-bold">(</span>X_all<span class="ansi-yellow-intense-fg ansi-bold">[</span>is_training_index<span class="ansi-yellow-intense-fg ansi-bold">]</span><span class="ansi-yellow-intense-fg ansi-bold">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     48</span>             y_train_new<span class="ansi-yellow-intense-fg ansi-bold">.</span>append<span class="ansi-yellow-intense-fg ansi-bold">(</span>y_all<span class="ansi-yellow-intense-fg ansi-bold">[</span>is_training_index<span class="ansi-yellow-intense-fg ansi-bold">]</span><span class="ansi-yellow-intense-fg ansi-bold">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     49</span>     X_valid_new<span class="ansi-yellow-intense-fg ansi-bold">,</span> y_valid_new <span class="ansi-yellow-intense-fg ansi-bold">=</span> <span class="ansi-yellow-intense-fg ansi-bold">(</span><span class="ansi-yellow-intense-fg ansi-bold">[</span><span class="ansi-yellow-intense-fg ansi-bold">]</span><span class="ansi-yellow-intense-fg ansi-bold">,</span> <span class="ansi-yellow-intense-fg ansi-bold">[</span><span class="ansi-yellow-intense-fg ansi-bold">]</span><span class="ansi-yellow-intense-fg ansi-bold">)</span>
+
+<span class="ansi-red-fg">MemoryError</span>: </pre>
 </div>
 </div>
 
