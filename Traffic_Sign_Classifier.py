@@ -1014,12 +1014,12 @@ get_ipython().magic('matplotlib inline')
 print("done")
 
 
-# In[111]:
+# In[129]:
 
 # TEMP TRUNCATE DATA FOR Alpha TESTING the code
 
 # truncate the training set to be just a bit larger than the BATCH_SIZE (so run at least 2 batches per epoch)
-tr = int(BATCH_SIZE * 1.2)
+tr = int(BATCH_SIZE * .7)#1.2)
 # truncate validation (and training??) set to each be about 15% of the training set size
 va = te = int(tr * 0.2)
 
@@ -1033,12 +1033,12 @@ y_test  = y_test[0:te]
 print('DATA TRUNCATED TO:', len(X_train), "SAMPLES for preliminary testing")
  
 
-EPOCHS = 40
+EPOCHS = 4
 print('EPOCHS TRUNCATED TO:', EPOCHS, "EPOCHS for preliminary testing")
 #
 
 
-# In[113]:
+# In[142]:
 
 ##ATTEMPT TO WRITE ROUTINE FOR DYNAMIC UPDATING THE PLOT
 
@@ -1048,94 +1048,66 @@ from IPython import display
 # for displaying a legend
 import matplotlib.patches as mpatches
 
-# Initializations for Dynamic Plot figures
-vloss, tloss, vaccu, taccu = [[],[],[],[]]
-epoch_x_axis = [] #range(1, EPOCHS+1)
+# Initializations for Dynamic Plotting of training_stats during training
 
-# # figure size in inches: width, height    
-# fig = plt.figure(1, figsize=(7, 7))
+plt.gca().cla()
 
-# # to display legend
-# blue_patch  = mpatches.Patch(color='blue',  label='Validation Set')
-# red_patch   = mpatches.Patch(color='black', label='Training Set')
-# black_patch = mpatches.Patch(color='red',   label='Minimum 93.00% Validation Accuracy Required')
+# prevent overlapping of labels with subplots
+plt.tight_layout()
 
-# plt.subplot(311, title = "Loss vs Epoch")
-# #plt.plot(epoch_x_axis, vloss, 'b', epoch_x_axis, tloss, 'k')
+# figure size in inches: width, height    
+fig = plt.figure(1, figsize=(7, 7))
 
-# #     plt.subplot(313, title="% Accuracy vs Epoch")
-# plt.subplot(312, title="% Accuracy vs Epoch")
-# req_accuracy = 0.9300
-# #     plt.plot(epoch_x_axis, vaccu, 'b', epoch_x_axis, taccu, 'k')
-# #     plt.axhline(req_accuracy, color='r')
+# to display legend
+blue_patch  = mpatches.Patch(color='blue',  label='Validation Set')
+red_patch   = mpatches.Patch(color='black', label='Training Set')
+black_patch = mpatches.Patch(color='red',   label='Minimum 93.00% Validation Accuracy Required')
 
-# # overlay legend on "Accuracy" (the most spacious) subplot
-# plt.legend(handles=[blue_patch, black_patch, red_patch])
+# plot horizontal line at minimum required accuracy of 93.00%
+req_accuracy = 0.9300
 
-# #     # zoomed in accuracy plot, highlighting variance around req_accuracy
-# #     plt.subplot(312, title="% Accuracy vs Epoch, zoomed in ")
-# #     plt.plot(epoch_x_axis, vaccu, 'b', epoch_x_axis, taccu, 'k')
-# #     plt.axhline(req_accuracy, color='r')
-# #     plt.ylim((.9000, 1.0100))
+# holds training stats data for dynamic plotting purposes
+vloss, tloss, vaccu, taccu = [[],[],[],[]]  # y-axis training_stats data
+epoch_x_axis = [] # length of x-axis data,  must match length of y-axis data above    #range(1, EPOCHS+1)
 
-# # prevent overlapping of labels with subplots
-# plt.tight_layout()
-# plt.show()
+
     
 def update_plot(plt, epoch_x_axis, vloss, tloss, vaccu, taccu):
-    #update plots at each Epoch
+    #update training_stats plots at each Epoch
+    # The better way to do this would be to use %matlab notebook
+    # that _should_ prevent flashing of plot. I did not get that method to work (yet)
+    #  So I'm using "display" and plt.gca().cla()
+ 
+    # prevent overlapping of labels with subplots
+    #plt.tight_layout()
     
-    
-    plt.gca().cla() 
-    
-    
-    
-    
-    #figure size in inches: width, height      
-    fig = plt.figure(1, figsize=(7, 7))
-
-    # to display legend
-#     blue_patch  = mpatches.Patch(color='blue',  label='Validation Set')
-#     red_patch   = mpatches.Patch(color='black', label='Training Set')
-#     black_patch = mpatches.Patch(color='red',   label='Minimum 93.00% Validation Accuracy Required')
+    ##
+    #plt.gca().cla() 
 
     plt.subplot(311, title = "Loss vs Epoch")
     plt.plot(epoch_x_axis, vloss, 'b', epoch_x_axis, tloss, 'k')
-
-#     #     plt.subplot(313, title="% Accuracy vs Epoch")
-#     plt.subplot(312, title="% Accuracy vs Epoch")
-#     req_accuracy = 0.9300
-#     plt.plot(epoch_x_axis, vaccu, 'b', epoch_x_axis, taccu, 'k')
-#     plt.axhline(req_accuracy, color='r')
-
-#     # overlay legend on "Accuracy" (the most spacious) subplot
-#     plt.legend(handles=[blue_patch, black_patch, red_patch])
-
-#     # prevent overlapping of labels with subplots
-#     plt.tight_layout()
-
     
+    # zoomed in accuracy plot, highlighting variance around req_accuracy
+    plt.subplot(312, title="% Accuracy vs Epoch, zoomed in ")
+    plt.plot(epoch_x_axis, vaccu, 'b', epoch_x_axis, taccu, 'k')
+    plt.axhline(req_accuracy, color='r')
+    plt.ylim((.9000, 1.0100))
     
-    
-    
-    #plt.plot(tempx,tempy,label='test')
-#    plt.plot(epoch_x_axis, vloss, 'b', epoch_x_axis, tloss, 'k')
-    #plt.legend()
+
+    plt.subplot(313, title="% Accuracy vs Epoch")
+    plt.plot(epoch_x_axis, vaccu, 'b', epoch_x_axis, taccu, 'k')
+    plt.axhline(req_accuracy, color='r')
+    # overlay legend on "Accuracy" (the most spacious) subplot
+    plt.legend(handles=[blue_patch, black_patch, red_patch])
+    plt.legend()
+ 
+
     display.clear_output(wait=True)
     display.display(plt.gcf()) 
-    time.sleep(0.5) 
-
+    #time.sleep(0.5) 
     
+    plt.tight_layout()
     
-#     plt.subplot(311, title = "Loss vs Epoch")
-#     plt.plot(epoch_x_axis, vloss, 'b', epoch_x_axis, tloss, 'k')
-
-#     plt.subplot(312, title="% Accuracy vs Epoch")
-#     plt.plot(epoch_x_axis, vaccu, 'b', epoch_x_axis, taccu, 'k')
-#     plt.axhline(req_accuracy, color='r')
-
-    
-    #plt.show()
    
     
 # train the model
@@ -1156,24 +1128,23 @@ with tf.Session() as sess:
             labels   = y_train[batch_start:batch_end]
             #train
             sess.run(training_operation, feed_dict = {x:features, y:labels, keep_probability: DROPOUT_ON})
-#             if batch_start % 100 == 0:
-#                 print("        batch ", 1+batch_start//BATCH_SIZE, "of ", 1 + int(num_examples/BATCH_SIZE))#, "batches,  on EPOCH", epoch, "of", EPOCHS, "EPOCHS")
+            # printing doesn't work well with dynamic plot updates..
+            #if batch_start % 100 == 0:
+            #    print("        batch ", 1+batch_start//BATCH_SIZE, "of ", 1 + int(num_examples/BATCH_SIZE))#, "batches,  on EPOCH", epoch, "of", EPOCHS, "EPOCHS")
                       
         # evaluate on validation set, and print results of model from this EPOCH
         print(X_valid.shape)
         validation_accuracy, validation_loss = evaluate_data(X_valid, y_valid)
         training_accuracy,   training_loss = evaluate_data(X_train, y_train)
         
-#         # TODO: would be awesome to display live charts of these results, rather than this text output 
-#         print("Validation Loss = {:.3f}".format(validation_loss))
+#         # TODO: would be awesome to display live charts of these results, rather than this text output
+        ## text output of progress WAS here..
         
-        # format for saving to datafile (each line is a new epoch)
-        
+        # format for saving training_stats to datafile (each line is a new epoch)        
         training_stats.append([validation_loss, training_loss, validation_accuracy, training_accuracy])
         np.savetxt('./training_stats/training_stats.tmp.txt', training_stats)
         
-        # format for dynamic plot - each axis to plot is a separate array
-        
+        # format for dynamic plot - each axis to plot is a separate array       
         vloss.append(validation_loss)
         tloss.append(training_loss)
         vaccu.append(validation_accuracy)
@@ -1182,55 +1153,43 @@ with tf.Session() as sess:
         epoch_x_axis.append(epoch)
         
         # dynamically plot training_stats
-        #update_plot(i, validation_loss, training_loss, validation_accuracy, training_accuracy)
+        update_plot(plt, epoch_x_axis, vloss, tloss, vaccu, taccu)
         
-        print(epoch, vloss, tloss)
-        print(epoch, len(vloss), len(tloss), len(epoch_x_axis))
-        
-        plt.gca().cla() 
+    
+    
+    tend = time.time()
+    print("\nElapsed Training Time: {:.3f} minutes".format(float( (time.time()-tstart) / 60 )))
+    
+    # stats at timeof last EPOCH
+    print("Validation Loss = {:.3f}".format(validation_loss))
+    
+    
+    # use current time stamp as id for model and training_stats filenames
+    model_timestamp = time.strftime("%y%m%d_%H%M")
+    
+    # save training_stats
+    stats_filename = './training_stats/training_stats_' + model_timestamp + '.txt'
+    np.savetxt(filename, training_stats)
+    print("\ntraining_stats Saved As: ", stats_filename, "\n")    
 
-        plt.subplot(311, title = "Loss vs Epoch")
-        plt.plot(epoch_x_axis, vloss, 'b', epoch_x_axis, tloss, 'k')
+    # save trained model
+    print("saving model..")
+    saver = tf.train.Saver()
+    model_filename = './trained_models/sh_trained_traffic_sign_classifier_' + model_timestamp
+    saver.save(sess, model_filename)
+    print("Model Saved As: ", model_filename, "\n")
+    print()
 
-        plt.subplot(312, title="% Accuracy vs Epoch")
-        plt.plot(epoch_x_axis, vaccu, 'b', epoch_x_axis, taccu, 'k')
-        plt.axhline(req_accuracy, color='r')
 
-        display.clear_output(wait=True)
-        display.display(plt.gcf()) 
-        time.sleep(0.5) 
-    
-    
-#     tend = time.time()
-#     print("\nElapsed Training Time: {:.3f} minutes".format(float( (time.time()-tstart) / 60 )))
-    
-#     # use current time stamp as id for model and training_stats filenames
-#     model_timestamp = time.strftime("%y%m%d_%H%M")
-    
-#     # save training_stats
-#     filename = './training_stats/training_stats_' + model_timestamp + '.txt'
-#     np.savetxt(filename, training_stats)
-#     print("\ntraining_stats Saved As: ", filename, "\n")    
-
-#     # save trained model
-#     print("Saving model..")
-#     saver = tf.train.Saver()
-#     saver.save(sess, './trained_models/sh_trained_traffic_sign_classifier_' + model_timestamp)
-#     print("Model Saved")
-#     print()
-
-    
-    
-#plt.show()
 # return to state the remaining notebook cells expect
 get_ipython().magic('matplotlib inline')
 
 
-# In[43]:
+# In[133]:
 
 import time
 
-#assert("no, Don't Retrain Model !"  ==  
+assert("no, Don't Retrain Model !"  ==  
 #        "Re-Running cells for later sections of the notebook. AND Want To Use The already TRAINED NETWORK"
 #       )
 

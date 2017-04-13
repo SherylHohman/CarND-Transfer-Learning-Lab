@@ -14405,10 +14405,10 @@ sets imply underfitting. A high accuracy on the training set but low accuracy on
 
 
 
-<div id="c7f71e64-f18f-429c-a6e8-69e0ce3996fc"></div>
+<div id="20eec602-4c1c-4160-993a-8c84ba6ecbce"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#c7f71e64-f18f-429c-a6e8-69e0ce3996fc');
+var element = $('#20eec602-4c1c-4160-993a-8c84ba6ecbce');
 /* Put everything inside the global mpl namespace */
 window.mpl = {};
 
@@ -15450,13 +15450,13 @@ done
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[111]:</div>
+<div class="prompt input_prompt">In&nbsp;[129]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># TEMP TRUNCATE DATA FOR Alpha TESTING the code</span>
 
 <span class="c1"># truncate the training set to be just a bit larger than the BATCH_SIZE (so run at least 2 batches per epoch)</span>
-<span class="n">tr</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">BATCH_SIZE</span> <span class="o">*</span> <span class="mf">1.2</span><span class="p">)</span>
+<span class="n">tr</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">BATCH_SIZE</span> <span class="o">*</span> <span class="o">.</span><span class="mi">7</span><span class="p">)</span><span class="c1">#1.2)</span>
 <span class="c1"># truncate validation (and training??) set to each be about 15% of the training set size</span>
 <span class="n">va</span> <span class="o">=</span> <span class="n">te</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tr</span> <span class="o">*</span> <span class="mf">0.2</span><span class="p">)</span>
 
@@ -15470,7 +15470,7 @@ done
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;DATA TRUNCATED TO:&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X_train</span><span class="p">),</span> <span class="s2">&quot;SAMPLES for preliminary testing&quot;</span><span class="p">)</span>
  
 
-<span class="n">EPOCHS</span> <span class="o">=</span> <span class="mi">40</span>
+<span class="n">EPOCHS</span> <span class="o">=</span> <span class="mi">4</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;EPOCHS TRUNCATED TO:&#39;</span><span class="p">,</span> <span class="n">EPOCHS</span><span class="p">,</span> <span class="s2">&quot;EPOCHS for preliminary testing&quot;</span><span class="p">)</span>
 <span class="c1">#</span>
 </pre></div>
@@ -15485,9 +15485,9 @@ done
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>153 30 30 total: 213 percent training:  0.7183098591549296
-DATA TRUNCATED TO: 153 SAMPLES for preliminary testing
-EPOCHS TRUNCATED TO: 40 EPOCHS for preliminary testing
+<pre>89 17 17 total: 123 percent training:  0.7235772357723578
+DATA TRUNCATED TO: 89 SAMPLES for preliminary testing
+EPOCHS TRUNCATED TO: 4 EPOCHS for preliminary testing
 </pre>
 </div>
 </div>
@@ -15498,7 +15498,7 @@ EPOCHS TRUNCATED TO: 40 EPOCHS for preliminary testing
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[113]:</div>
+<div class="prompt input_prompt">In&nbsp;[142]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">##ATTEMPT TO WRITE ROUTINE FOR DYNAMIC UPDATING THE PLOT</span>
@@ -15509,94 +15509,66 @@ EPOCHS TRUNCATED TO: 40 EPOCHS for preliminary testing
 <span class="c1"># for displaying a legend</span>
 <span class="kn">import</span> <span class="nn">matplotlib.patches</span> <span class="k">as</span> <span class="nn">mpatches</span>
 
-<span class="c1"># Initializations for Dynamic Plot figures</span>
-<span class="n">vloss</span><span class="p">,</span> <span class="n">tloss</span><span class="p">,</span> <span class="n">vaccu</span><span class="p">,</span> <span class="n">taccu</span> <span class="o">=</span> <span class="p">[[],[],[],[]]</span>
-<span class="n">epoch_x_axis</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1">#range(1, EPOCHS+1)</span>
+<span class="c1"># Initializations for Dynamic Plotting of training_stats during training</span>
 
-<span class="c1"># # figure size in inches: width, height    </span>
-<span class="c1"># fig = plt.figure(1, figsize=(7, 7))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 
-<span class="c1"># # to display legend</span>
-<span class="c1"># blue_patch  = mpatches.Patch(color=&#39;blue&#39;,  label=&#39;Validation Set&#39;)</span>
-<span class="c1"># red_patch   = mpatches.Patch(color=&#39;black&#39;, label=&#39;Training Set&#39;)</span>
-<span class="c1"># black_patch = mpatches.Patch(color=&#39;red&#39;,   label=&#39;Minimum 93.00% Validation Accuracy Required&#39;)</span>
+<span class="c1"># prevent overlapping of labels with subplots</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 
-<span class="c1"># plt.subplot(311, title = &quot;Loss vs Epoch&quot;)</span>
-<span class="c1"># #plt.plot(epoch_x_axis, vloss, &#39;b&#39;, epoch_x_axis, tloss, &#39;k&#39;)</span>
+<span class="c1"># figure size in inches: width, height    </span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
 
-<span class="c1"># #     plt.subplot(313, title=&quot;% Accuracy vs Epoch&quot;)</span>
-<span class="c1"># plt.subplot(312, title=&quot;% Accuracy vs Epoch&quot;)</span>
-<span class="c1"># req_accuracy = 0.9300</span>
-<span class="c1"># #     plt.plot(epoch_x_axis, vaccu, &#39;b&#39;, epoch_x_axis, taccu, &#39;k&#39;)</span>
-<span class="c1"># #     plt.axhline(req_accuracy, color=&#39;r&#39;)</span>
+<span class="c1"># to display legend</span>
+<span class="n">blue_patch</span>  <span class="o">=</span> <span class="n">mpatches</span><span class="o">.</span><span class="n">Patch</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span>  <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Validation Set&#39;</span><span class="p">)</span>
+<span class="n">red_patch</span>   <span class="o">=</span> <span class="n">mpatches</span><span class="o">.</span><span class="n">Patch</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Training Set&#39;</span><span class="p">)</span>
+<span class="n">black_patch</span> <span class="o">=</span> <span class="n">mpatches</span><span class="o">.</span><span class="n">Patch</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span>   <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Minimum 93.00% Validation Accuracy Required&#39;</span><span class="p">)</span>
 
-<span class="c1"># # overlay legend on &quot;Accuracy&quot; (the most spacious) subplot</span>
-<span class="c1"># plt.legend(handles=[blue_patch, black_patch, red_patch])</span>
+<span class="c1"># plot horizontal line at minimum required accuracy of 93.00%</span>
+<span class="n">req_accuracy</span> <span class="o">=</span> <span class="mf">0.9300</span>
 
-<span class="c1"># #     # zoomed in accuracy plot, highlighting variance around req_accuracy</span>
-<span class="c1"># #     plt.subplot(312, title=&quot;% Accuracy vs Epoch, zoomed in &quot;)</span>
-<span class="c1"># #     plt.plot(epoch_x_axis, vaccu, &#39;b&#39;, epoch_x_axis, taccu, &#39;k&#39;)</span>
-<span class="c1"># #     plt.axhline(req_accuracy, color=&#39;r&#39;)</span>
-<span class="c1"># #     plt.ylim((.9000, 1.0100))</span>
+<span class="c1"># holds training stats data for dynamic plotting purposes</span>
+<span class="n">vloss</span><span class="p">,</span> <span class="n">tloss</span><span class="p">,</span> <span class="n">vaccu</span><span class="p">,</span> <span class="n">taccu</span> <span class="o">=</span> <span class="p">[[],[],[],[]]</span>  <span class="c1"># y-axis training_stats data</span>
+<span class="n">epoch_x_axis</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># length of x-axis data,  must match length of y-axis data above    #range(1, EPOCHS+1)</span>
 
-<span class="c1"># # prevent overlapping of labels with subplots</span>
-<span class="c1"># plt.tight_layout()</span>
-<span class="c1"># plt.show()</span>
+
     
 <span class="k">def</span> <span class="nf">update_plot</span><span class="p">(</span><span class="n">plt</span><span class="p">,</span> <span class="n">epoch_x_axis</span><span class="p">,</span> <span class="n">vloss</span><span class="p">,</span> <span class="n">tloss</span><span class="p">,</span> <span class="n">vaccu</span><span class="p">,</span> <span class="n">taccu</span><span class="p">):</span>
-    <span class="c1">#update plots at each Epoch</span>
+    <span class="c1">#update training_stats plots at each Epoch</span>
+    <span class="c1"># The better way to do this would be to use %matlab notebook</span>
+    <span class="c1"># that _should_ prevent flashing of plot. I did not get that method to work (yet)</span>
+    <span class="c1">#  So I&#39;m using &quot;display&quot; and plt.gca().cla()</span>
+ 
+    <span class="c1"># prevent overlapping of labels with subplots</span>
+    <span class="c1">#plt.tight_layout()</span>
     
-    
-    <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span> 
-    
-    
-    
-    
-    <span class="c1">#figure size in inches: width, height      </span>
-    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
-
-    <span class="c1"># to display legend</span>
-<span class="c1">#     blue_patch  = mpatches.Patch(color=&#39;blue&#39;,  label=&#39;Validation Set&#39;)</span>
-<span class="c1">#     red_patch   = mpatches.Patch(color=&#39;black&#39;, label=&#39;Training Set&#39;)</span>
-<span class="c1">#     black_patch = mpatches.Patch(color=&#39;red&#39;,   label=&#39;Minimum 93.00% Validation Accuracy Required&#39;)</span>
+    <span class="c1">##</span>
+    <span class="c1">#plt.gca().cla() </span>
 
     <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">311</span><span class="p">,</span> <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Loss vs Epoch&quot;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">epoch_x_axis</span><span class="p">,</span> <span class="n">vloss</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">epoch_x_axis</span><span class="p">,</span> <span class="n">tloss</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">)</span>
-
-<span class="c1">#     #     plt.subplot(313, title=&quot;% Accuracy vs Epoch&quot;)</span>
-<span class="c1">#     plt.subplot(312, title=&quot;% Accuracy vs Epoch&quot;)</span>
-<span class="c1">#     req_accuracy = 0.9300</span>
-<span class="c1">#     plt.plot(epoch_x_axis, vaccu, &#39;b&#39;, epoch_x_axis, taccu, &#39;k&#39;)</span>
-<span class="c1">#     plt.axhline(req_accuracy, color=&#39;r&#39;)</span>
-
-<span class="c1">#     # overlay legend on &quot;Accuracy&quot; (the most spacious) subplot</span>
-<span class="c1">#     plt.legend(handles=[blue_patch, black_patch, red_patch])</span>
-
-<span class="c1">#     # prevent overlapping of labels with subplots</span>
-<span class="c1">#     plt.tight_layout()</span>
-
     
+    <span class="c1"># zoomed in accuracy plot, highlighting variance around req_accuracy</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">312</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;% Accuracy vs Epoch, zoomed in &quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">epoch_x_axis</span><span class="p">,</span> <span class="n">vaccu</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">epoch_x_axis</span><span class="p">,</span> <span class="n">taccu</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">req_accuracy</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">((</span><span class="o">.</span><span class="mi">9000</span><span class="p">,</span> <span class="mf">1.0100</span><span class="p">))</span>
     
-    
-    
-    <span class="c1">#plt.plot(tempx,tempy,label=&#39;test&#39;)</span>
-<span class="c1">#    plt.plot(epoch_x_axis, vloss, &#39;b&#39;, epoch_x_axis, tloss, &#39;k&#39;)</span>
-    <span class="c1">#plt.legend()</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">313</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;% Accuracy vs Epoch&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">epoch_x_axis</span><span class="p">,</span> <span class="n">vaccu</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">epoch_x_axis</span><span class="p">,</span> <span class="n">taccu</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">req_accuracy</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="c1"># overlay legend on &quot;Accuracy&quot; (the most spacious) subplot</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="p">[</span><span class="n">blue_patch</span><span class="p">,</span> <span class="n">black_patch</span><span class="p">,</span> <span class="n">red_patch</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+ 
+
     <span class="n">display</span><span class="o">.</span><span class="n">clear_output</span><span class="p">(</span><span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">display</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">())</span> 
-    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span> 
-
+    <span class="c1">#time.sleep(0.5) </span>
     
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
     
-<span class="c1">#     plt.subplot(311, title = &quot;Loss vs Epoch&quot;)</span>
-<span class="c1">#     plt.plot(epoch_x_axis, vloss, &#39;b&#39;, epoch_x_axis, tloss, &#39;k&#39;)</span>
-
-<span class="c1">#     plt.subplot(312, title=&quot;% Accuracy vs Epoch&quot;)</span>
-<span class="c1">#     plt.plot(epoch_x_axis, vaccu, &#39;b&#39;, epoch_x_axis, taccu, &#39;k&#39;)</span>
-<span class="c1">#     plt.axhline(req_accuracy, color=&#39;r&#39;)</span>
-
-    
-    <span class="c1">#plt.show()</span>
    
     
 <span class="c1"># train the model</span>
@@ -15617,24 +15589,23 @@ EPOCHS TRUNCATED TO: 40 EPOCHS for preliminary testing
             <span class="n">labels</span>   <span class="o">=</span> <span class="n">y_train</span><span class="p">[</span><span class="n">batch_start</span><span class="p">:</span><span class="n">batch_end</span><span class="p">]</span>
             <span class="c1">#train</span>
             <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">training_operation</span><span class="p">,</span> <span class="n">feed_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="p">:</span><span class="n">features</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span><span class="n">labels</span><span class="p">,</span> <span class="n">keep_probability</span><span class="p">:</span> <span class="n">DROPOUT_ON</span><span class="p">})</span>
-<span class="c1">#             if batch_start % 100 == 0:</span>
-<span class="c1">#                 print(&quot;        batch &quot;, 1+batch_start//BATCH_SIZE, &quot;of &quot;, 1 + int(num_examples/BATCH_SIZE))#, &quot;batches,  on EPOCH&quot;, epoch, &quot;of&quot;, EPOCHS, &quot;EPOCHS&quot;)</span>
+            <span class="c1"># printing doesn&#39;t work well with dynamic plot updates..</span>
+            <span class="c1">#if batch_start % 100 == 0:</span>
+            <span class="c1">#    print(&quot;        batch &quot;, 1+batch_start//BATCH_SIZE, &quot;of &quot;, 1 + int(num_examples/BATCH_SIZE))#, &quot;batches,  on EPOCH&quot;, epoch, &quot;of&quot;, EPOCHS, &quot;EPOCHS&quot;)</span>
                       
         <span class="c1"># evaluate on validation set, and print results of model from this EPOCH</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">X_valid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
         <span class="n">validation_accuracy</span><span class="p">,</span> <span class="n">validation_loss</span> <span class="o">=</span> <span class="n">evaluate_data</span><span class="p">(</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">)</span>
         <span class="n">training_accuracy</span><span class="p">,</span>   <span class="n">training_loss</span> <span class="o">=</span> <span class="n">evaluate_data</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
         
-<span class="c1">#         # TODO: would be awesome to display live charts of these results, rather than this text output </span>
-<span class="c1">#         print(&quot;Validation Loss = {:.3f}&quot;.format(validation_loss))</span>
+<span class="c1">#         # TODO: would be awesome to display live charts of these results, rather than this text output</span>
+        <span class="c1">## text output of progress WAS here..</span>
         
-        <span class="c1"># format for saving to datafile (each line is a new epoch)</span>
-        
+        <span class="c1"># format for saving training_stats to datafile (each line is a new epoch)        </span>
         <span class="n">training_stats</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">validation_loss</span><span class="p">,</span> <span class="n">training_loss</span><span class="p">,</span> <span class="n">validation_accuracy</span><span class="p">,</span> <span class="n">training_accuracy</span><span class="p">])</span>
         <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="s1">&#39;./training_stats/training_stats.tmp.txt&#39;</span><span class="p">,</span> <span class="n">training_stats</span><span class="p">)</span>
         
-        <span class="c1"># format for dynamic plot - each axis to plot is a separate array</span>
-        
+        <span class="c1"># format for dynamic plot - each axis to plot is a separate array       </span>
         <span class="n">vloss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">validation_loss</span><span class="p">)</span>
         <span class="n">tloss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">training_loss</span><span class="p">)</span>
         <span class="n">vaccu</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">validation_accuracy</span><span class="p">)</span>
@@ -15643,46 +15614,34 @@ EPOCHS TRUNCATED TO: 40 EPOCHS for preliminary testing
         <span class="n">epoch_x_axis</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span>
         
         <span class="c1"># dynamically plot training_stats</span>
-        <span class="c1">#update_plot(i, validation_loss, training_loss, validation_accuracy, training_accuracy)</span>
+        <span class="n">update_plot</span><span class="p">(</span><span class="n">plt</span><span class="p">,</span> <span class="n">epoch_x_axis</span><span class="p">,</span> <span class="n">vloss</span><span class="p">,</span> <span class="n">tloss</span><span class="p">,</span> <span class="n">vaccu</span><span class="p">,</span> <span class="n">taccu</span><span class="p">)</span>
         
-        <span class="nb">print</span><span class="p">(</span><span class="n">epoch</span><span class="p">,</span> <span class="n">vloss</span><span class="p">,</span> <span class="n">tloss</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">epoch</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">vloss</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">tloss</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">epoch_x_axis</span><span class="p">))</span>
-        
-        <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span> 
+    
+    
+    <span class="n">tend</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Elapsed Training Time: </span><span class="si">{:.3f}</span><span class="s2"> minutes&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">tstart</span><span class="p">)</span> <span class="o">/</span> <span class="mi">60</span> <span class="p">)))</span>
+    
+    <span class="c1"># stats at timeof last EPOCH</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Validation Loss = </span><span class="si">{:.3f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">validation_loss</span><span class="p">))</span>
+    
+    
+    <span class="c1"># use current time stamp as id for model and training_stats filenames</span>
+    <span class="n">model_timestamp</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%y%m</span><span class="si">%d</span><span class="s2">_%H%M&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># save training_stats</span>
+    <span class="n">stats_filename</span> <span class="o">=</span> <span class="s1">&#39;./training_stats/training_stats_&#39;</span> <span class="o">+</span> <span class="n">model_timestamp</span> <span class="o">+</span> <span class="s1">&#39;.txt&#39;</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">training_stats</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">training_stats Saved As: &quot;</span><span class="p">,</span> <span class="n">stats_filename</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>    
 
-        <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">311</span><span class="p">,</span> <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Loss vs Epoch&quot;</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">epoch_x_axis</span><span class="p">,</span> <span class="n">vloss</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">epoch_x_axis</span><span class="p">,</span> <span class="n">tloss</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">)</span>
+    <span class="c1"># save trained model</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;saving model..&quot;</span><span class="p">)</span>
+    <span class="n">saver</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">Saver</span><span class="p">()</span>
+    <span class="n">model_filename</span> <span class="o">=</span> <span class="s1">&#39;./trained_models/sh_trained_traffic_sign_classifier_&#39;</span> <span class="o">+</span> <span class="n">model_timestamp</span>
+    <span class="n">saver</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span> <span class="n">model_filename</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Model Saved As: &quot;</span><span class="p">,</span> <span class="n">model_filename</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">()</span>
 
-        <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">312</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;% Accuracy vs Epoch&quot;</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">epoch_x_axis</span><span class="p">,</span> <span class="n">vaccu</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">epoch_x_axis</span><span class="p">,</span> <span class="n">taccu</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">req_accuracy</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
 
-        <span class="n">display</span><span class="o">.</span><span class="n">clear_output</span><span class="p">(</span><span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">display</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">())</span> 
-        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span> 
-    
-    
-<span class="c1">#     tend = time.time()</span>
-<span class="c1">#     print(&quot;\nElapsed Training Time: {:.3f} minutes&quot;.format(float( (time.time()-tstart) / 60 )))</span>
-    
-<span class="c1">#     # use current time stamp as id for model and training_stats filenames</span>
-<span class="c1">#     model_timestamp = time.strftime(&quot;%y%m%d_%H%M&quot;)</span>
-    
-<span class="c1">#     # save training_stats</span>
-<span class="c1">#     filename = &#39;./training_stats/training_stats_&#39; + model_timestamp + &#39;.txt&#39;</span>
-<span class="c1">#     np.savetxt(filename, training_stats)</span>
-<span class="c1">#     print(&quot;\ntraining_stats Saved As: &quot;, filename, &quot;\n&quot;)    </span>
-
-<span class="c1">#     # save trained model</span>
-<span class="c1">#     print(&quot;Saving model..&quot;)</span>
-<span class="c1">#     saver = tf.train.Saver()</span>
-<span class="c1">#     saver.save(sess, &#39;./trained_models/sh_trained_traffic_sign_classifier_&#39; + model_timestamp)</span>
-<span class="c1">#     print(&quot;Model Saved&quot;)</span>
-<span class="c1">#     print()</span>
-
-    
-    
-<span class="c1">#plt.show()</span>
 <span class="c1"># return to state the remaining notebook cells expect</span>
 <span class="o">%</span> <span class="n">matplotlib</span> <span class="n">inline</span>
 </pre></div>
@@ -15696,187 +15655,111 @@ EPOCHS TRUNCATED TO: 40 EPOCHS for preliminary testing
 
 
 <div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Training...
+
+EPOCH:  1 of 4 EPOCHS
+(17, 32, 32, 3)
+evaluating..
+evaluating..
+</pre>
+</div>
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AssertionError</span>                            Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-142-91cc30342fb0&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-intense-fg ansi-bold">    112</span> 
+<span class="ansi-green-intense-fg ansi-bold">    113</span>         <span class="ansi-red-intense-fg ansi-bold"># dynamically plot training_stats</span>
+<span class="ansi-green-fg">--&gt; 114</span><span class="ansi-red-fg">         </span>update_plot<span class="ansi-yellow-intense-fg ansi-bold">(</span>plt<span class="ansi-yellow-intense-fg ansi-bold">,</span> epoch_x_axis<span class="ansi-yellow-intense-fg ansi-bold">,</span> vloss<span class="ansi-yellow-intense-fg ansi-bold">,</span> tloss<span class="ansi-yellow-intense-fg ansi-bold">,</span> vaccu<span class="ansi-yellow-intense-fg ansi-bold">,</span> taccu<span class="ansi-yellow-intense-fg ansi-bold">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    115</span> 
+<span class="ansi-green-intense-fg ansi-bold">    116</span> 
+
+<span class="ansi-green-fg">&lt;ipython-input-142-91cc30342fb0&gt;</span> in <span class="ansi-cyan-fg">update_plot</span><span class="ansi-blue-fg">(plt, epoch_x_axis, vloss, tloss, vaccu, taccu)</span>
+<span class="ansi-green-intense-fg ansi-bold">     42</span>     <span class="ansi-red-intense-fg ansi-bold">##</span>
+<span class="ansi-green-intense-fg ansi-bold">     43</span>     <span class="ansi-red-intense-fg ansi-bold">#plt.gca().cla()</span>
+<span class="ansi-green-fg">---&gt; 44</span><span class="ansi-red-fg">     </span><span class="ansi-green-intense-fg ansi-bold">assert</span><span class="ansi-yellow-intense-fg ansi-bold">(</span><span class="ansi-blue-intense-fg ansi-bold">&#34;false&#34;</span> <span class="ansi-yellow-intense-fg ansi-bold">==</span> <span class="ansi-blue-intense-fg ansi-bold">&#34;true&#34;</span><span class="ansi-yellow-intense-fg ansi-bold">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     45</span>     plt<span class="ansi-yellow-intense-fg ansi-bold">.</span>subplot<span class="ansi-yellow-intense-fg ansi-bold">(</span><span class="ansi-cyan-intense-fg ansi-bold">311</span><span class="ansi-yellow-intense-fg ansi-bold">,</span> title <span class="ansi-yellow-intense-fg ansi-bold">=</span> <span class="ansi-blue-intense-fg ansi-bold">&#34;Loss vs Epoch&#34;</span><span class="ansi-yellow-intense-fg ansi-bold">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     46</span>     plt<span class="ansi-yellow-intense-fg ansi-bold">.</span>plot<span class="ansi-yellow-intense-fg ansi-bold">(</span>epoch_x_axis<span class="ansi-yellow-intense-fg ansi-bold">,</span> vloss<span class="ansi-yellow-intense-fg ansi-bold">,</span> <span class="ansi-blue-intense-fg ansi-bold">&#39;b&#39;</span><span class="ansi-yellow-intense-fg ansi-bold">,</span> epoch_x_axis<span class="ansi-yellow-intense-fg ansi-bold">,</span> tloss<span class="ansi-yellow-intense-fg ansi-bold">,</span> <span class="ansi-blue-intense-fg ansi-bold">&#39;k&#39;</span><span class="ansi-yellow-intense-fg ansi-bold">)</span>
+
+<span class="ansi-red-fg">AssertionError</span>: </pre>
+</div>
+</div>
+
+<div class="output_area"><div class="prompt"></div>
 
 
 <div class="output_png output_subarea ">
-<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAX0AAAC8CAYAAACUun70AAAABHNCSVQICAgIfAhkiAAAAAlwSFlz
-AAALEgAACxIB0t1+/AAAIABJREFUeJzt3Xl8VPW5+PHPk4VAErZA2EJCDCA7IrK0kqu4satX7cul
-2p+9t15v+9KqbbWiXr3a2qt1ae1tba2K1962XluXtgJFXIK2WlQWgbAIYYcECFsICRCyPL8/zslk
-JplMJpNkzoR53q/Xec3MOd8z88w3med7zvcsX1FVjDHGxIcErwMwxhgTPZb0jTEmjljSN8aYOGJJ
-3xhj4oglfWOMiSOW9I0xJo5Y0jemkxKRXBFREUnyOhbTeVjSNzFDRHaKyKVexxEpNwFXikiF3/R9
-r+Myxp9tIRjTvs5R1a1eB2FMc2xL33QKIvJvIrJVRI6IyFsiMsidLyLyUxEpFZFjIrJORMa6y+aI
-yEYROS4ixSJyd5D3TRGRsvp13HmZInJSRPqJSF8RWeSWOSIifxeRVv9uRORhEXldRP7gxrNaRM7x
-Wz5KRD5wP2eDiFzht6ybiDwtIrvc7/iRiHTze/sbRWS3iBwSkQdaG5uJL5b0TcwTkYuBx4BrgYHA
-LuBVd/EM4ALgbKAXcB1w2F22APh3Ve0OjAUKGr+3qlYBbwI3+M2+FvhQVUuB7wF7gUygP3A/EOm9
-S64EXgMygFeAP4tIsogkAwuBd4B+wLeB34vICHe9p4DzgPPddb8P1Pm9bz4wArgEeEhERkUYn4kD
-lvRNZ3Aj8JKqrnaT9H3Al0UkF6gGugMjAVHVTaq6z12vGhgtIj1U9aiqrm7m/V8hMOl/1Z1X/x4D
-gSGqWq2qf9fQN6xa7W6t108z/ZatUtXXVbUa+AnQFfiSO6UDj6vqaVUtABYBN7h7Ff8K3Kmqxapa
-q6r/cOuh3iOqelJV1wJrgXMwphmW9E1nMAhn6x4AVa3A2ZrPchPkL4BngQMi8ryI9HCLXgPMAXaJ
-yIci8uVm3r8A6CYiU0VkCDAB+JO77ElgK/COiGwXkfktxDpRVXv5TUv9lu3x+w51OHsQg9xpjzuv
-3i4gC+iL0zhsC/GZ+/2en8BpQIwJypK+6QxKgCH1L0QkDegDFAOo6n+r6nnAGJxunnvc+StU9Uqc
-LpM/A38M9uZusv0jztb+V4FFqnrcXXZcVb+nqnnA5cB3ReSSCL9Htt93SAAGu9+tBMhudKwgx/1+
-h4BTwNAIP9OYAJb0TaxJFpGuflMSTlfLv4jIBBFJAf4L+FRVd4rIZHcLPRmoxEmQtSLSRURuFJGe
-bndKOVAb4nNfwTkecCMNXTuIyDwRGSYi4vceod4nlPNE5Gr3O90FVAGfAJ+6sX/f7eOfjtPAvOo2
-SC8BPxGRQSKSKCJfduvBmFazpG9izV+Bk37Tw6r6PvAg8AawD2er93q3fA/gBeAoTpfIYZwDnwBf
-A3aKSDnwTeCm5j5UVesT7yBgid+i4cB7QAWwHPilqn4QIv61jc7Tf8Zv2V9wGpajbmxXu8cJTgNX
-ALNxtux/Cfw/Vf3CXe9uoBBYARwBfoz9dk2ExAZRMabjicjDwDBVbbbhMSYabGvBGGPiiCV9Y4yJ
-I9a9Y4wxccS29I0xJo5Y0jfGmDgSc3fZ7Nu3r+bm5nodhjHGdCqrVq06pKqZLZWLuaSfm5vLypUr
-vQ7DGGM6FRHZ1XIp694xxsSQ66+HlBRISoKEBGcSCT0lJ0N6OmRlwZQp8OMfg52f0jxL+sYYTxQX
-w8iRgYn9D3+A06ehttZJ3OEk75oaqKyEkhJYsQLmz29oMIYNg+XLO/67tJdoNFYx171jjDkzHToE
-48bB/v2hy2VnwwUXwPnnw5w5EOoQ38GD8NvfQkEBbNnifEZ5eUOjsW2b8z7g7BGcfz786U/Qu3e7
-fa2IHTkCa9cGTllZsHBhx36uJX1jTIf52tfg979vfgs2MREuvdRJxN26BS8TSmYmfPe7ztTY8uXO
-52/f7nx+dTV8+CFkZDjLu3WDyZPh2Wdh7Nim67eXAwfg/fedeL74Arp2dRL8nj0NZfr3hwkTGhqo
-jhRzF2dNmjRJ7UCuMZ1TZSUMHAjHjwdfLgLf+Aa88EJ04wL46U/hhz+EsrLgjVBSEgwd6uxdXHSR
-M6WHMTJBRQWsXAmrV8PGjXD4sLOHUVwMx445ex3+Ro92Evw55zQ89u/f9u8nIqtUdVKL5c6UpP/W
-W5u58spf+16LdAUgMTHFfewOQNeuSSS4RzLqlyUnZ/jW69EjmcREyMjIRAT69++HCIwZM5wBA2DI
-EKefcNiwiL6eMWekvDzYsSP4skGDnC3bvn2jG1NL3ngDHnwQtm519gJakpDg7JmIOIm8cTJvLC3N
-SeZ5eU5inzbNaUh69Wqf+BuLu6Qvcj/OMKrRIH6PjZ+HmurLJYQok+C3PNhj/ZTYzOsk93mi3/xE
-d35yo+dJfuskAylAGtATyGH8+Av45S8HMG1aW+vLnIkuvhiWLQu+7OGH4T//M6rhtNnmzXDbbU63
-S2Wls7dSVeUcKK6rC9w7SEx0jhF06wY9ekCfPs4eztChcMMNzllECVE+TSbcpH8G9ekLDcOcajOP
-/oIta1yuuQZRQqzX+Ll/2cbLgsXZ3FTn91j/vNbvdS3OcK4ngRr3ef1jNc54HSdozfgf69Ylkp+f
-jjMEbU+/xx7u8/rH3jjDyObhDFXbI+j79ezp7No//XTYIZgY89RTcM89wZdddx28+mrwZZ3BiBHw
-3nteR9HxzpgtfdOyRx+FJ59cSnn5FziNwwmchqHKnU77Pa/2m3fKLV/prnMCZ0yRk818Un+ckQHr
-p7NwGoNR7uvwN4GSkuDqq51T+Yw3KiqcbooTJ5ouGzcO1q2Lfkymqbjr3jHR9+KLL/If//EfHDhw
-oNGSJHdSnMbDf7zvZJy9gqHAaJwxyL/kPo9sfzg93emXbY+DYabB9dcHb2xTU50zUsI5yGmiJ9yk
-bxdnmYjdcsst7N+/H1VtNFWjehLVU+zdu5uMjAy/taqB3cAy4Fng34BxOMcaBKe76MvAr3H2QlpW
-UQEDBjS9UrNrV9sKba2nngq8UMrfo486/dqVlZbwOzNL+qZDZWVlcfjw4SANg3LRRRcFWaMCZ6zw
-b+LsFTQc5F6y5G3fVZp33ukcSAulqso5a6JxYzB6dDt/yU7u3nsb6qZxf/2gQQ1Xxj7wgDfxmfZl
-Sd94pqCgoElDcNtttzVbfvbs2YgIIsKzzyazZ88BX0Lyn4YPD/25mzaFvpdLr17wWLROBPPIddc1
-fN8nnghclpjo3M5A1TnX3JxZrE/fxLy+ffty+PDhkGWefPJJ7r777maXl5Y6Bx1LS9s7ujNDly7O
-efaDBnkdiYmU9embM8ahQ4d8ewL79u0jIcgJ0Pfcc49vL+C1115rsrxfP+fgY+O9gro6+Pd/dy6k
-iTdduzr3qVF1usIs4ccHS/qmUxkwYAC1tbW+RuDBBx9sUubaa68N2QD4E4HnnnMOBgfrKuoMU1kZ
-PPMMXHWVcw+Z/v2dA63Dh8NLLzW/3smT0L17R/2lTKyy7h1zxrj77rt5OsSVXwcOHKBfv35RjMiY
-6Onw7h0RyRaRZSKySUQ2iMidQcrcKCLr3OkfInJOpJ9nTEueeuop3x7AN7/5zSbL+/fv79sDKLXO
-fROn2tK9UwN8T1VH4Vxdc5uIND4ZbgdwoaqOB34IPN+GzzMmbL/61a98DcCcOXOaLK9vAJJbOu/T
-mDNMxElfVfep6mr3+XFgE5DVqMw/VPWo+/ITYHCkn2dMpBYvXuxrAM4666yAZTU1Nb6tfxHhsTP9
-XE0T99rlQK6I5ALnAp+GKPYNYEl7fJ4xkdq+fbuvAege5Cjm/fff72sAMjMzPYjQmI7V5qQvIunA
-G8BdqlreTJmLcJL+vc0sv1VEVorIyoMHD7Y1JGPCUl5e7msAbr755ibLDx06FLAXcNNNN3kQpTHt
-q01n74hIMrAIWKqqP2mmzHjgT8BsVd3S0nva2TvGawcPHmTAgAHU1dWFLLdw4ULmzZsXpaiMCS0a
-Z+8IsADYFCLh5wBvAl8LJ+EbEwsyMzMDrgW4p5kbyF9++eUBewIvvvhilCM1pvUi3tIXkXzg70Ah
-DffOvR/IAVDV50TkReAaYJe7vKallsi29E2smzhxIp9//nmL5b7zne/wk58E3R4ypt3Z/fSNiZIx
-Y8awcePGFsstXbqUGTNmRCEiE4/s3jvGRMmGDRsC7hQ6d+7coOVmzpzp6wpKT0/nyJEjUY7UGEv6
-xrS7RYsWBTQCkydPblKmsrKSPn36+BqBCRMmeBCpiUeW9I3pYJ999pmvATh8+HDQ6wPWrl0bcFD4
-9ttv9yBSEw8s6RsTRRkZGQHXB6xcuZLExMQm5Z599tmARuDaa6/1IFpzJrKkb4yHzjvvPGpqanyN
-wKOPPhq03GuvvRbQCIwcOTLKkZozhSV9Y2LIAw88EHA84JFHHglabvPmzb4GICEhgaVLl0Y5UtNZ
-WdI3JoY99NBDAY3AsmXLmtwZVFWZNWuWrxGYOXOmR9GazsCSvjGdyPTp0zl9+rSvEbj33qa3s3rn
-nXd8DcDZZ5/tQZQmllnSN6YTe/zxx30NwK5du+jSpUvA8qKiImsATABL+sacIXJycqiqqvI1Arm5
-uQHL/RuA0aMbj3dk4oUlfWPOUDt27PA1ANnZ2QHLNm3aFHA20NixYz2K0kSbJX1j4sDu3bt9DUBW
-VlaT5Rs2bAhoBLKzszl+/LgHkZqOZknfmDizd+9eXwPwxRdf0KtXr6BlevTogYjQpUsXPv74Yw8i
-NR3Bkr4xcWzEiBEcPXrU1wiUl5c36Qqqrq4mPz/ftxdwxx13eBStaQ+W9I0xPt27dw/oCnryySdx
-xktq8POf/9x3Udjbb7/tUaQmUpb0jTHNuvvuu6mrq0NVKSoqIjU11bdMVZk9ezYiQl5enodRmtaw
-pG+MCcuwYcOorKxEVTlw4EDANQE7duzwdf+88MILHkZpWmJJ3xjTav369fNdE3DjjTcGLLv11lsR
-Efr378+JEyc8itA0x5K+MaZNfve736GqVFRUBHT/lJaWkpaWhohwyy23eBih8Rdx0heRbBFZJiKb
-RGSDiNwZpIyIyH+LyFYRWSciE9sWrjEmVqWlpfm6fx577LGAZQsWLPCd/rl69WqPIjTQti39GuB7
-qjoK+BJwm4g0vrZ7NjDcnW4FftWGzzPGdBLz58/3nQHkf+//6upqzjvvPESElJQUfvazn3kYZXyK
-OOmr6j5VXe0+Pw5sAhpf6ncl8L/q+AToJSIDI47WGNPpbNq0CVVl1apVAQd/T58+zV133eU7ADxo
-0CC2bt3qYaTxoV369EUkFzgX+LTRoixgj9/rvTRtGIwxcWDixIm+g7/r1q2jT58+Acv37dvH8OHD
-fdcADBkyhPfff9+jaM9cbU76IpIOvAHcparljRcHWUWDvMetIrJSRFYePHiwrSEZY2LcuHHjOHTo
-kK8L6MEHHwwYHEZV2b17N5deeqlvT6BLly5ccskllJWVeRh559empC8iyTgJ//eq+maQInsB/2u6
-BwMljQup6vOqOklVJ2VmZrYlJGNMJ/SDH/zANzhMXV0dt912G2lpaQFlqqurKSgooHfv3gE3h0tK
-SqJ3795MnTqV5557jqqqKo++Recgqk02vMNb0bk2+zfAEVW9q5kyc4HbgTnAVOC/VXVKqPedNGmS
-rly5MqKYjDFnpv3793PVVVexcuVKampq2vx+9Q1GYmIiSUlJpKSkkJaWRq9evbjssst47LHH6Nq1
-aztEHj0iskpVJ7VYrg1JPx/4O1AI1Lmz7wdyAFT1Obdh+AUwCzgB/IuqhszolvSNMeGqqqpiwYIF
-vPzyy2zZsoWKigpqa2sRESLNbfVEhNTUVEaMGMHXv/51vvWtb5GUlNROkbe/Dk/6HcWSvjEmmjZv
-3szHH3/M2rVrKSoqYuPGjezbt4/Tp083KSsiDBgwgKuvvpr77rsv6NgEXrGkb4wxbbR3715+9KMf
-sWTJEkpKSqiurg5YnpCQwIABA5g+fTr33XefpyOQWdI3xpgOsGbNGp544gk++OADDhw4QF1dnW+Z
-iDB8+HBmzpzJTTfdxJQpIQ9htitL+sYYEwW7d+/mscce4+2332bv3r0BB5oTExMZPHgwU6ZM4Zpr
-ruGqq64KuECtPVnSN8YYD5w6dYo33niDN998kxUrVlBcXBywNzB58mTOOeccxo8fz/jx4xk3bhwZ
-GRlt/lxL+sYYEwPq6ur4xz/+wSuvvMLq1atJTU1l3bp1HD582FcmKyuL8ePHc8EFFzB//vyIPifc
-pB+75x8ZY8wZICEhgfz8fPLz833zVJX9+/ezbt26gOmjjz7q8Hgs6RtjTJSJCAMHDmTgwIHMnDnT
-Nz8aPS82iIoxxsSIxoPQd8hnxFqfvogcBHaFKNIXOBSlcFrLYouMxRYZiy0yZ2psQ1S1xZuXxVzS
-b4mIrAznYIUXLLbIWGyRsdgiE++xWfeOMcbEEUv6xhgTRzpj0n/e6wBCsNgiY7FFxmKLTFzH1un6
-9I0xxkSuM27pG2OMiVCnSfoiMktENovIVhGJ7DrlDiQiO0WkUETWiIin95EQkZdEpFRE1vvNyxCR
-d0WkyH3sHUOxPSwixW7drRGROR7ElS0iy0Rkk4hsEJE73fme11uI2GKh3rqKyGcistaN7RF3/lki
-8qlbb38QkY65y1hksb0sIjv86m1CtGPzizFRRD4XkUXu646vt/qBiWN5AhKBbUAe0AVYC4z2Oq5G
-Me4E+nodhxvLBcBEYL3fvCeA+e7z+cCPYyi2h4G7Pa6zgcBE93l3YAswOhbqLURssVBvAqS7z5OB
-T4EvAX8ErnfnPwd8K4Ziexn4ipf15hfjd4FXgEXu6w6vt86ypT8F2Kqq21X1NPAqcKXHMcUsVf0b
-cKTR7CtxxjTGffznqAblaiY2z6nqPlVd7T4/DmwCsoiBegsRm+fUUeG+THYnBS4GXnfne1VvzcUW
-E0RkMDAXeNF9LUSh3jpL0s8C9vi93kuM/NP7UeAdEVklIrd6HUwQ/VV1HzhJBOjncTyN3S4i69zu
-H0+6nuqJSC5wLs6WYUzVW6PYIAbqze2iWAOUAu/i7JWXqWr9jeU9+702jk1V6+vtR269/VREUryI
-DXgG+D4NY4z3IQr11lmSfrAbUsRMi+2apqoTgdnAbSJygdcBdSK/AoYCE4B9wNNeBSIi6cAbwF2q
-Wu5VHMEEiS0m6k1Va1V1AjAYZ698VLBi0Y3K/dBGsYnIWOA+YCQwGcgA7o12XCIyDyhV1VX+s4MU
-bfd66yxJfy+Q7fd6MFDiUSxBqWqJ+1gK/Annnz+WHBCRgQDuY6nH8fio6gH3x1kHvIBHdSciyThJ
-9feq+qY7OybqLVhssVJv9VS1DPgAp9+8l4jU38XX89+rX2yz3O4yVdUq4H/wpt6mAVeIyE6c7uqL
-cbb8O7zeYu48/b59+2pubq7XYRhjTKeyatWqQxrGDddi7n76ubm52MhZxhjTOiIS6u7EPjGX9Nm8
-GaZP9zoKY4w5I3WWPn1jjDHtIPa29EeMgA8+8DoKY4zpXMIcdcu29I0xJo5Y0jfGmDhiSd8YY+KI
-JX1jjIkjlvSNMSaOWNI3xpg4ElbSb2kAE/dOdfUDEmwRkTK/ZbV+y95qz+CNMca0Tovn6YtIIvAs
-cBnOjc9WiMhbqrqxvoyqfsev/Ldxbv1a76R7lztjjDEeC2dLv7UDmNwA/F97BGeMMaZ9hZP0wx7A
-RESGAGcBBX6zu4rIShH5REQ8Ga3JGGOMI5zbMLTmxv7XA6+raq3fvBxVLRGRPKBARApVdVvABzgj
-Td0KkJOTE0ZIxhhjIhHOln5rBjC5nkZdO36Di2zHGcTg3MYrqerzqjpJVSdlZrZ4O2hjjDERCifp
-rwCGi8hZItIFJ7E3OQtHREYAvYHlfvN6148/KSJ9cUaL2dh4XWOMMdHRYveOqtaIyO3AUiAReElV
-N4jID4CVqlrfANwAvKqBQ3GNAn4tInU4Dczj/mf9GGOMia6YGy5x0qRJaiNnGWNM64jIKlWd1FI5
-uyLXGGPiiCV9Y4yJI5b0jTEmjljSN8aYOGJJ3xhj4oglfWOMiSOW9I0xJo5Y0jfGmDhiSd8YY+JI
-e42c9XUROeg3QtYtfstuFpEid7q5PYM3xhjTOu0ycpbrD6p6e6N1M4D/BCbh3I55lbvu0XaJ3hhj
-TKt0xMhZ/mYC76rqETfRvwvMiixUY4wxbdWeI2ddIyLrROR1Eam//37Yo24ZY4zpeOEk/XBGzloI
-5KrqeOA94DetWBcRudUdUnHlwYMHwwjJGGNMJNpl5CxVPayqVe7LF4Dzwl3XXd9GzjLGmChol5Gz
-RGSg38srgE3u86XADHcErd7ADHeeMcYYD7TXyFl3iMgVQA1wBPi6u+4REfkhTsMB8ANVPdIB38MY
-Y0wYbOQsY4w5A9jIWcYYY5qwpG+MMXHEkr4xxsQRS/rGGBNHLOkbY0wcsaRvjDFxxJK+McbEkRYv
-zjLGGNM2qsqaNWvYvn07o0ePZvjw4SQleZN+w/pUEZkF/AznitwXVfXxRsu/C9yCc0XuQeBfVXWX
-u6wWKHSL7lbVK9opdmOMaaK6uppjx441O50+fTri905ISCAvL49x48Zx1llnkZDQfGdJRUUF7733
-HosXL+avf/0rJSUNtx1LSUlh1KhRjBs3LmAaNGgQIsHuU9l+2msQlc+BSap6QkS+BTwBXOcuO6mq
-E9o5bmOMQVUpKirio48+8k1FRUVR+ey0tDTGjBkTkLQzMzMpKChg8eLFfPjhh5w+fZoePXowY8YM
-5s6dy5gxY/jiiy8oLCyksLCQ999/n9/+9re+95w6dSqffPJJh8Ydzpa+bxAVABGpH0TFl/RVdZlf
-+U+Am9ozSGOMUVXKysrYsmULH3/8sS/J19+OvU+fPkybNo2vfvWrZGRk0LNnz6BT165dI46hurqa
-LVu2+JJ2YWEhf/nLX1iwYEFAuZEjR/Ltb3+buXPnkp+fT3Jysm/Z5MmTA8oeOXLE915dunSJOLZw
-hZP0gw2EMjVE+W8AS/xedxWRlThdP4+r6p9bHaUxZ5DKykr27NlDSUkJZWVlTbof6ueJCNnZ2eTk
-5ARM/fr16/AugPZUV1dHeXm57/uVl5dTU1PTbPmamhr27dvH7t27m0wVFRW+cnl5ecyePZv8/Hzy
-8/MZMWJEyO6W9jJ16lSmTm1IgapKaWkphYWFFBcXk5+fz9ChQ8N+v4yMDC688EIuvPDCjgi3iXCS
-flgDoQCIyE044+H6R5+jqiUikgcUiEihqm5rtN6twK0AOTk5YQVuTEdRVfbv38/69es5efKkbwux
-R48evuf+B+FUlRMnTjRJ3kePHmXv3r1NEtfhw4eb/ez09HTfZ6kqS5Ys4cSJEwFlUlJSyM7OZtiw
-Yb5uhfHjxzNy5EhSUlKafe+6ujoOHDjA7t27KS4upra2ttmySUlJZGVl+RqZUMn01KlTbNy40be1
-un79eoqLiwOSfKQyMzPJyclhxIgRzJgxg5ycHHJzc5k6dSqDBg2K+H3bk4jQv39/+vfv73UoYQkn
-6Yc1EIqIXAo8AFzoN6AKqlriPm4XkQ+Ac4GApK+qzwPPg3OXzdZ9BWMiV1FRwYYNGwJ21wsLCzl0
-6FDI9VJTU+nRowenT5/m2LFjIRNo9+7dGTJkCDk5OUydOpWcnByGDBlCVlYWvXr1CmhUEhMTA9ZV
-VY4ePdqk4di1axebN2+moKDAd2AyMTGRESNGMG7cOMaOHUtVVVXAOnv27KG6urrVdVTfyPjvbSQm
-JrJ+/XoKCwspKiryff+UlBTf2SnNda/07NkzoLujMRFh4MCBZGdn061bt1bHa0Jr8dbKIpIEbAEu
-AYpx7o3/VVXd4FfmXOB1YJaqFvnN7w2cUNUqEekLLAeubHQQOIDdWtl0pNraWlasWMHixYtZvHgx
-a9asof43kJqaytixYwMOzPXo0SOga8J/Ki8vJyUlJWAPwH/q1asXgwcPpmfPnh32faqrqykqKmrS
-aO3YsYOEhATf1nrjKSsrK2T/cVVVFcXFxb4Gxr/xKCkpQVXJy8tj/PjxAfU1bNgwz05FjHfh3lo5
-rPvpi8gc4BkaBlH5kf8gKiLyHjAO2OeusltVrxCR84FfA3U4F4I9o6oLgnyEjyX92FFdXU15eTkV
-FRWkpaW1uIUWTTU1NRw7diys2MrKyli6dCmLFy9myZIlHDp0iMTERDIzz6eq6hK6dDmHLl3GkZR0
-FiKB3Rh5eTBvnjO1opu2WWVl8PbbsGgRfPop1NU1X7ZvX5g9Gy6/HCZOhNZ041dWVpKSktIhCbi6
-uprq6mpSU1Pb/b1N5No16UeTJf3oOXLkCG+//TbvvvsuJSUlTQ4knjx5ssk63bp1a7JFm56e3mEH
-0FSVioqKJlvZjfu5G8dW321y4sQJli9fTm1tLX369GHWrNmkpMzljTdmUlnZmyuugOZylyqsXg2b
-3ME/R41yEvC8efDlL0O4+bSoCBYudKa//x1qa52EfuGFEKr3Yts2+OQTJ45Bg2DuXOfzL7mk+ZhN
-/LKkbwAn4SxZAunpMHu2cvBgoa9rY/ny5dTV1dGnTx+GDh0atHuiZ8+epKWlUVlZ2ezFLv5nVHSE
-+i35YFN6enrI2AAuueQS5s2bR13dFO64I5HVq+Gii+AXv4DRo1v+/G3bnC3zhQvhww+hpgYyMpyt
-8Ozs5terqIB33oEtW5zXY8c2NBpTp0Kj7vugDh50/n4LF8LSpXD8OHTt6iT+sWNDb/2PHw+zZkHv
-3i1/jmm7bdvgf/8XQl371bs3zJzp/G3a+wQsS/pxqKamhiNHyikoOMaSJcdYtuwYe/YcA8pwDqcs
-pv7s21GjJnLNNXOZN28ukyZNanIA8Uxy8CDMnw8vveRsMT/9NFx3XWQ/umPHnES+aJHTTVNW1nzZ
-pCTIz29I9Lm5EX8FwEkmf/ub0wAsWgR79zZftrbWmRIT4Z/+yfn8yy+Hs89uWwymqRMn4PHH4Ykn
-nL9RqB6ZgO7NAAAHFklEQVTQ+gYhJ6eh2/Cii5yGvK3iLukfO3aChx76eQdEFBtqamqoqDgWMB0/
-XuZ7Xl5+jKqqymbXT01NZ8iQyzh1ai47dswGBjF4cMM/XlvOfktPh2HD2n/Lpa2qqmDBAnjgAWer
-+zvfgQcfhO7dvY6s49XWwmefNTQQhe6NUM4+u6EBmDYtdIKKVGkpFBe3//tGy7Bh4f2PqMJbb8Fd
-d8HOnXDDDfDUU6F/S/v3w+LFzt/l3XedBiMtDS67zPm7zJ0LAwZEFnfcJf1Nmw4yenS/DogolnQF
-ejY7pab2ZMyYnkye3JPzz+/JgAEN3SA5OTm+c7gPHHD+8RYtcrZaK5tvK8KWm9uQTC68EEKcLt6h
-SksDv1tFBVx8Mfz85+F15Zypdu506mTRIli2zNni7NXL6f65/HLnMSMjsvdWhXXrGhqYzz5z5nVW
-XbrA9OkN/8/B9tC2boU77nC63saMcboKp09v3eecOuX8Leq7Dvfscd5r/frI4o67pH/qlPLWW6c6
-IKLYkJCQSHJy86fYDRgAkyaF10/s79QpWL4c2nD9jG/r5b334ORJZ8t/xoyGLZd+HdgWqzpbsfUJ
-59NPnXlZWc4P9qqrnK2oWNsL8dLx485W5qJFzt+ttNT5v5k2raErasSI0HVWn7Dq632Pe83+lCnO
-+uPGdc46r6lxfg+LFsHmzc68MWMa6mX8eKcb54knnA2bRx6B229v+x5T/f/xoUPORkok4i7pG++d
-PAkFBQ2JoLjY+eHn5ra+MQrX8ePOngvA5MkNP84JEzpn0om2ujpYsaLh7KJ165z5gwaFPkOopMTp
-mkhNDWzgI+2aiEXBzrpKSHDq7KabnMQ/cKDXUTawpG88pQpr1jg/mPotpo6QnOwcqJwzJ7Z+gJ3V
-7t1Og/3JJ06Sa06fPs7ZS+11EDLW1V9fsXw5XHMNXHCB1xE1ZUnfGGPiSLhJ34ZLNMaYOBJzW/oi
-chDYFaJIXyD03bC8Y7FFxmKLjMUWmTM1tiGqmtlSoZhL+i0RkZXh7MJ4wWKLjMUWGYstMvEem3Xv
-GGNMHLGkb4wxcaQzJv3nvQ4gBIstMhZbZCy2yMR1bJ2uT98YY0zkOuOWvjHGmAh1mqQvIrNEZLOI
-bBWR+V7H05iI7BSRQhFZIyKeXl0mIi+JSKmIrPeblyEi74pIkfvoyV3Wm4ntYREpdutujTtSW7Tj
-yhaRZSKySUQ2iMid7nzP6y1EbLFQb11F5DMRWevG9og7/ywR+dSttz+ISPM3jop+bC+LyA6/epsQ
-7dj8YkwUkc9FZJH7uuPrTVVjfsIZpnEbkAd0AdYCo72Oq1GMO4G+XsfhxnIBMBFY7zfvCWC++3w+
-8OMYiu1h4G6P62wgMNF93h1nXOjRsVBvIWKLhXoTIN19ngx8CnwJ+CNwvTv/OeBbMRTby8BXvKw3
-vxi/C7wCLHJfd3i9dZYt/SnAVlXdrqqngVeBKz2OKWap6t+AI41mXwn8xn3+G+CfoxqUq5nYPKeq
-+1R1tfv8OLAJyCIG6i1EbJ5TR/3QacnupMDFwOvufK/qrbnYYoKIDAbmAi+6r4Uo1FtnSfpZ1A/5
-5NhLjPzT+1HgHRFZJSK3eh1MEP1VdR84SQSItcEHbheRdW73j6cD/IlILnAuzpZhTNVbo9ggBurN
-7aJYA5QC7+LslZepao1bxLPfa+PYVLW+3n7k1ttPRcSj0R94Bvg+UOe+7kMU6q2zJP1gN8mNmRbb
-NU1VJwKzgdtEJAbvwxezfgUMBSYA+4CnvQpERNKBN4C7VLUNowy0vyCxxUS9qWqtqk4ABuPslY8K
-Viy6Ubkf2ig2ERkL3AeMBCYDGcC90Y5LROYBpaq6yn92kKLtXm+dJenvBfyHoB4MlHgUS1CqWuI+
-lgJ/wvnnjyUHRGQggPtY6nE8Pqp6wP1x1gEv4FHdiUgyTlL9vaq+6c6OiXoLFlus1Fs9VS0DPsDp
-N+8lIknuIs9/r36xzXK7y1RVq4D/wZt6mwZcISI7cbqrL8bZ8u/weussSX8FMNw9st0FuB54y+OY
-fEQkTUS61z8HZgARDnrWYd4Cbnaf3wz8xcNYAtQnVddVeFB3bn/qAmCTqv7Eb5Hn9dZcbDFSb5ki
-0st93g24FOeYwzLgK24xr+otWGxf+DXigtNnHvV6U9X7VHWwqubi5LMCVb2RaNSb10evW3GUew7O
-WQvbgAe8jqdRbHk4ZxStBTZ4HR/wfzi7+9U4e0nfwOkvfB8och8zYii23wKFwDqcJDvQg7jycXal
-1wFr3GlOLNRbiNhiod7GA5+7MawHHnLn5wGfAVuB14CUGIqtwK239cDvcM/w8WoCptNw9k6H15td
-kWuMMXGks3TvGGOMaQeW9I0xJo5Y0jfGmDhiSd8YY+KIJX1jjIkjlvSNMSaOWNI3xpg4YknfGGPi
-yP8H2StDzB0wpK0AAAAASUVORK5CYII=
+<img src="data:image/png;base64,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
+YII=
 "
 >
 </div>
@@ -15889,12 +15772,12 @@ yP8H2StDzB0wpK0AAAAASUVORK5CYII=
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[43]:</div>
+<div class="prompt input_prompt">In&nbsp;[133]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
 
-<span class="c1">#assert(&quot;no, Don&#39;t Retrain Model !&quot;  ==  </span>
+<span class="k">assert</span><span class="p">(</span><span class="s2">&quot;no, Don&#39;t Retrain Model !&quot;</span>  <span class="o">==</span>  
 <span class="c1">#        &quot;Re-Running cells for later sections of the notebook. AND Want To Use The already TRAINED NETWORK&quot;</span>
 <span class="c1">#       )</span>
 
@@ -15973,2439 +15856,13 @@ yP8H2StDzB0wpK0AAAAASUVORK5CYII=
 
 
 <div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Training...
-
-EPOCH:  1 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.995 minutes
-Validation Loss = 1.865
- (Training Loss = 1.866)
-Validation Accuracy = 0.295
- (Training Accuracy = 0.289)
-
-EPOCH:  2 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.995 minutes
-Validation Loss = 1.690
- (Training Loss = 1.691)
-Validation Accuracy = 0.373
- (Training Accuracy = 0.370)
-
-EPOCH:  3 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.994 minutes
-Validation Loss = 1.598
- (Training Loss = 1.596)
-Validation Accuracy = 0.421
- (Training Accuracy = 0.412)
-
-EPOCH:  4 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.014 minutes
-Validation Loss = 1.510
- (Training Loss = 1.506)
-Validation Accuracy = 0.445
- (Training Accuracy = 0.442)
-
-EPOCH:  5 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.036 minutes
-Validation Loss = 1.476
- (Training Loss = 1.460)
-Validation Accuracy = 0.463
- (Training Accuracy = 0.460)
-
-EPOCH:  6 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.017 minutes
-Validation Loss = 1.411
- (Training Loss = 1.387)
-Validation Accuracy = 0.487
- (Training Accuracy = 0.488)
-
-EPOCH:  7 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.993 minutes
-Validation Loss = 1.398
- (Training Loss = 1.373)
-Validation Accuracy = 0.501
- (Training Accuracy = 0.506)
-
-EPOCH:  8 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.994 minutes
-Validation Loss = 1.350
- (Training Loss = 1.320)
-Validation Accuracy = 0.515
- (Training Accuracy = 0.522)
-
-EPOCH:  9 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.990 minutes
-Validation Loss = 1.315
- (Training Loss = 1.274)
-Validation Accuracy = 0.534
- (Training Accuracy = 0.540)
-
-EPOCH:  10 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.992 minutes
-Validation Loss = 1.302
- (Training Loss = 1.257)
-Validation Accuracy = 0.539
- (Training Accuracy = 0.545)
-
-EPOCH:  11 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.990 minutes
-Validation Loss = 1.267
- (Training Loss = 1.217)
-Validation Accuracy = 0.553
- (Training Accuracy = 0.561)
-
-EPOCH:  12 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.992 minutes
-Validation Loss = 1.249
- (Training Loss = 1.196)
-Validation Accuracy = 0.562
- (Training Accuracy = 0.572)
-
-EPOCH:  13 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.996 minutes
-Validation Loss = 1.224
- (Training Loss = 1.165)
-Validation Accuracy = 0.568
- (Training Accuracy = 0.585)
-
-EPOCH:  14 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.991 minutes
-Validation Loss = 1.214
- (Training Loss = 1.153)
-Validation Accuracy = 0.571
- (Training Accuracy = 0.582)
-
-EPOCH:  15 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.992 minutes
-Validation Loss = 1.203
- (Training Loss = 1.139)
-Validation Accuracy = 0.579
- (Training Accuracy = 0.593)
-
-EPOCH:  16 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.964 minutes
-Validation Loss = 1.202
- (Training Loss = 1.127)
-Validation Accuracy = 0.581
- (Training Accuracy = 0.593)
-
-EPOCH:  17 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.001 minutes
-Validation Loss = 1.196
- (Training Loss = 1.120)
-Validation Accuracy = 0.581
- (Training Accuracy = 0.598)
-
-EPOCH:  18 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.031 minutes
-Validation Loss = 1.199
- (Training Loss = 1.123)
-Validation Accuracy = 0.586
- (Training Accuracy = 0.601)
-
-EPOCH:  19 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.021 minutes
-Validation Loss = 1.171
- (Training Loss = 1.086)
-Validation Accuracy = 0.591
- (Training Accuracy = 0.613)
-
-EPOCH:  20 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.020 minutes
-Validation Loss = 1.190
- (Training Loss = 1.102)
-Validation Accuracy = 0.587
- (Training Accuracy = 0.603)
-
-EPOCH:  21 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.027 minutes
-Validation Loss = 1.193
- (Training Loss = 1.099)
-Validation Accuracy = 0.585
- (Training Accuracy = 0.604)
-
-EPOCH:  22 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.035 minutes
-Validation Loss = 1.158
- (Training Loss = 1.062)
-Validation Accuracy = 0.595
- (Training Accuracy = 0.621)
-
-EPOCH:  23 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.015 minutes
-Validation Loss = 1.165
- (Training Loss = 1.065)
-Validation Accuracy = 0.598
- (Training Accuracy = 0.617)
-
-EPOCH:  24 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.014 minutes
-Validation Loss = 1.160
- (Training Loss = 1.057)
-Validation Accuracy = 0.593
- (Training Accuracy = 0.623)
-
-EPOCH:  25 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.009 minutes
-Validation Loss = 1.138
- (Training Loss = 1.036)
-Validation Accuracy = 0.606
- (Training Accuracy = 0.633)
-
-EPOCH:  26 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.994 minutes
-Validation Loss = 1.132
- (Training Loss = 1.030)
-Validation Accuracy = 0.605
- (Training Accuracy = 0.630)
-
-EPOCH:  27 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.992 minutes
-Validation Loss = 1.140
- (Training Loss = 1.035)
-Validation Accuracy = 0.601
- (Training Accuracy = 0.630)
-
-EPOCH:  28 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.996 minutes
-Validation Loss = 1.134
- (Training Loss = 1.020)
-Validation Accuracy = 0.605
- (Training Accuracy = 0.638)
-
-EPOCH:  29 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.993 minutes
-Validation Loss = 1.168
- (Training Loss = 1.055)
-Validation Accuracy = 0.589
- (Training Accuracy = 0.623)
-
-EPOCH:  30 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.040 minutes
-Validation Loss = 1.141
- (Training Loss = 1.024)
-Validation Accuracy = 0.606
- (Training Accuracy = 0.633)
-
-EPOCH:  31 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.039 minutes
-Validation Loss = 1.122
- (Training Loss = 0.999)
-Validation Accuracy = 0.614
- (Training Accuracy = 0.648)
-
-EPOCH:  32 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.014 minutes
-Validation Loss = 1.112
- (Training Loss = 0.985)
-Validation Accuracy = 0.613
- (Training Accuracy = 0.647)
-
-EPOCH:  33 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.020 minutes
-Validation Loss = 1.130
- (Training Loss = 1.003)
-Validation Accuracy = 0.608
- (Training Accuracy = 0.642)
-
-EPOCH:  34 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.038 minutes
-Validation Loss = 1.116
- (Training Loss = 0.993)
-Validation Accuracy = 0.610
- (Training Accuracy = 0.649)
-
-EPOCH:  35 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.048 minutes
-Validation Loss = 1.125
- (Training Loss = 0.990)
-Validation Accuracy = 0.614
- (Training Accuracy = 0.653)
-
-EPOCH:  36 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.060 minutes
-Validation Loss = 1.141
- (Training Loss = 1.000)
-Validation Accuracy = 0.601
- (Training Accuracy = 0.641)
-
-EPOCH:  37 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.010 minutes
-Validation Loss = 1.129
- (Training Loss = 0.993)
-Validation Accuracy = 0.611
- (Training Accuracy = 0.646)
-
-EPOCH:  38 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.998 minutes
-Validation Loss = 1.101
- (Training Loss = 0.960)
-Validation Accuracy = 0.618
- (Training Accuracy = 0.661)
-
-EPOCH:  39 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.992 minutes
-Validation Loss = 1.121
- (Training Loss = 0.979)
-Validation Accuracy = 0.611
- (Training Accuracy = 0.652)
-
-EPOCH:  40 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.993 minutes
-Validation Loss = 1.106
- (Training Loss = 0.956)
-Validation Accuracy = 0.616
- (Training Accuracy = 0.660)
-
-EPOCH:  41 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.993 minutes
-Validation Loss = 1.115
- (Training Loss = 0.971)
-Validation Accuracy = 0.612
- (Training Accuracy = 0.651)
-
-EPOCH:  42 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.991 minutes
-Validation Loss = 1.116
- (Training Loss = 0.975)
-Validation Accuracy = 0.610
- (Training Accuracy = 0.651)
-
-EPOCH:  43 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.002 minutes
-Validation Loss = 1.142
- (Training Loss = 0.990)
-Validation Accuracy = 0.612
- (Training Accuracy = 0.647)
-
-EPOCH:  44 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.991 minutes
-Validation Loss = 1.100
- (Training Loss = 0.949)
-Validation Accuracy = 0.614
- (Training Accuracy = 0.665)
-
-EPOCH:  45 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.992 minutes
-Validation Loss = 1.106
- (Training Loss = 0.949)
-Validation Accuracy = 0.617
- (Training Accuracy = 0.665)
-
-EPOCH:  46 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.991 minutes
-Validation Loss = 1.103
- (Training Loss = 0.938)
-Validation Accuracy = 0.622
- (Training Accuracy = 0.668)
-
-EPOCH:  47 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.991 minutes
-Validation Loss = 1.097
- (Training Loss = 0.940)
-Validation Accuracy = 0.624
- (Training Accuracy = 0.668)
-
-EPOCH:  48 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.993 minutes
-Validation Loss = 1.096
- (Training Loss = 0.930)
-Validation Accuracy = 0.617
- (Training Accuracy = 0.671)
-
-EPOCH:  49 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.996 minutes
-Validation Loss = 1.096
- (Training Loss = 0.935)
-Validation Accuracy = 0.619
- (Training Accuracy = 0.669)
-
-EPOCH:  50 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.995 minutes
-Validation Loss = 1.097
- (Training Loss = 0.935)
-Validation Accuracy = 0.618
- (Training Accuracy = 0.668)
-
-EPOCH:  51 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.012 minutes
-Validation Loss = 1.119
- (Training Loss = 0.952)
-Validation Accuracy = 0.618
- (Training Accuracy = 0.661)
-
-EPOCH:  52 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.001 minutes
-Validation Loss = 1.093
- (Training Loss = 0.915)
-Validation Accuracy = 0.625
- (Training Accuracy = 0.677)
-
-EPOCH:  53 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.999 minutes
-Validation Loss = 1.088
- (Training Loss = 0.920)
-Validation Accuracy = 0.624
- (Training Accuracy = 0.676)
-
-EPOCH:  54 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.996 minutes
-Validation Loss = 1.091
- (Training Loss = 0.919)
-Validation Accuracy = 0.623
- (Training Accuracy = 0.673)
-
-EPOCH:  55 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.999 minutes
-Validation Loss = 1.083
- (Training Loss = 0.914)
-Validation Accuracy = 0.619
- (Training Accuracy = 0.673)
-
-EPOCH:  56 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.991 minutes
-Validation Loss = 1.094
- (Training Loss = 0.922)
-Validation Accuracy = 0.618
- (Training Accuracy = 0.673)
-
-EPOCH:  57 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.003 minutes
-Validation Loss = 1.090
- (Training Loss = 0.916)
-Validation Accuracy = 0.624
- (Training Accuracy = 0.674)
-
-EPOCH:  58 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.040 minutes
-Validation Loss = 1.087
- (Training Loss = 0.913)
-Validation Accuracy = 0.627
- (Training Accuracy = 0.672)
-
-EPOCH:  59 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.002 minutes
-Validation Loss = 1.109
- (Training Loss = 0.932)
-Validation Accuracy = 0.617
- (Training Accuracy = 0.667)
-
-EPOCH:  60 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.009 minutes
-Validation Loss = 1.097
- (Training Loss = 0.922)
-Validation Accuracy = 0.621
- (Training Accuracy = 0.670)
-
-EPOCH:  61 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.042 minutes
-Validation Loss = 1.081
- (Training Loss = 0.900)
-Validation Accuracy = 0.624
- (Training Accuracy = 0.677)
-
-EPOCH:  62 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.034 minutes
-Validation Loss = 1.093
- (Training Loss = 0.916)
-Validation Accuracy = 0.620
- (Training Accuracy = 0.674)
-
-EPOCH:  63 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.004 minutes
-Validation Loss = 1.088
- (Training Loss = 0.901)
-Validation Accuracy = 0.623
- (Training Accuracy = 0.679)
-
-EPOCH:  64 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.018 minutes
-Validation Loss = 1.095
- (Training Loss = 0.926)
-Validation Accuracy = 0.623
- (Training Accuracy = 0.670)
-
-EPOCH:  65 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.002 minutes
-Validation Loss = 1.092
- (Training Loss = 0.912)
-Validation Accuracy = 0.618
- (Training Accuracy = 0.680)
-
-EPOCH:  66 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.994 minutes
-Validation Loss = 1.082
- (Training Loss = 0.891)
-Validation Accuracy = 0.631
- (Training Accuracy = 0.684)
-
-EPOCH:  67 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.993 minutes
-Validation Loss = 1.084
- (Training Loss = 0.895)
-Validation Accuracy = 0.629
- (Training Accuracy = 0.682)
-
-EPOCH:  68 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.999 minutes
-Validation Loss = 1.085
- (Training Loss = 0.903)
-Validation Accuracy = 0.623
- (Training Accuracy = 0.677)
-
-EPOCH:  69 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.994 minutes
-Validation Loss = 1.091
- (Training Loss = 0.890)
-Validation Accuracy = 0.625
- (Training Accuracy = 0.683)
-
-EPOCH:  70 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.001 minutes
-Validation Loss = 1.083
- (Training Loss = 0.885)
-Validation Accuracy = 0.628
- (Training Accuracy = 0.687)
-
-EPOCH:  71 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.994 minutes
-Validation Loss = 1.085
- (Training Loss = 0.883)
-Validation Accuracy = 0.628
- (Training Accuracy = 0.686)
-
-EPOCH:  72 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.998 minutes
-Validation Loss = 1.082
- (Training Loss = 0.884)
-Validation Accuracy = 0.629
- (Training Accuracy = 0.686)
-
-EPOCH:  73 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.993 minutes
-Validation Loss = 1.089
- (Training Loss = 0.883)
-Validation Accuracy = 0.626
- (Training Accuracy = 0.683)
-
-EPOCH:  74 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.991 minutes
-Validation Loss = 1.084
- (Training Loss = 0.885)
-Validation Accuracy = 0.631
- (Training Accuracy = 0.687)
-
-EPOCH:  75 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.993 minutes
-Validation Loss = 1.090
- (Training Loss = 0.890)
-Validation Accuracy = 0.623
- (Training Accuracy = 0.687)
-
-EPOCH:  76 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.995 minutes
-Validation Loss = 1.070
- (Training Loss = 0.865)
-Validation Accuracy = 0.632
- (Training Accuracy = 0.692)
-
-EPOCH:  77 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.009 minutes
-Validation Loss = 1.080
- (Training Loss = 0.877)
-Validation Accuracy = 0.629
- (Training Accuracy = 0.694)
-
-EPOCH:  78 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.010 minutes
-Validation Loss = 1.077
- (Training Loss = 0.880)
-Validation Accuracy = 0.627
- (Training Accuracy = 0.689)
-
-EPOCH:  79 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.014 minutes
-Validation Loss = 1.083
- (Training Loss = 0.891)
-Validation Accuracy = 0.625
- (Training Accuracy = 0.682)
-
-EPOCH:  80 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.019 minutes
-Validation Loss = 1.077
- (Training Loss = 0.880)
-Validation Accuracy = 0.629
- (Training Accuracy = 0.690)
-
-EPOCH:  81 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.013 minutes
-Validation Loss = 1.067
- (Training Loss = 0.857)
-Validation Accuracy = 0.632
- (Training Accuracy = 0.698)
-
-EPOCH:  82 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.006 minutes
-Validation Loss = 1.075
- (Training Loss = 0.866)
-Validation Accuracy = 0.632
- (Training Accuracy = 0.690)
-
-EPOCH:  83 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.996 minutes
-Validation Loss = 1.076
- (Training Loss = 0.872)
-Validation Accuracy = 0.631
- (Training Accuracy = 0.693)
-
-EPOCH:  84 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.999 minutes
-Validation Loss = 1.080
- (Training Loss = 0.866)
-Validation Accuracy = 0.634
- (Training Accuracy = 0.692)
-
-EPOCH:  85 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.003 minutes
-Validation Loss = 1.093
- (Training Loss = 0.880)
-Validation Accuracy = 0.631
- (Training Accuracy = 0.689)
-
-EPOCH:  86 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.999 minutes
-Validation Loss = 1.081
- (Training Loss = 0.877)
-Validation Accuracy = 0.630
- (Training Accuracy = 0.688)
-
-EPOCH:  87 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.995 minutes
-Validation Loss = 1.090
- (Training Loss = 0.880)
-Validation Accuracy = 0.626
- (Training Accuracy = 0.685)
-
-EPOCH:  88 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.004 minutes
-Validation Loss = 1.079
- (Training Loss = 0.866)
-Validation Accuracy = 0.632
- (Training Accuracy = 0.697)
-
-EPOCH:  89 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.999 minutes
-Validation Loss = 1.095
- (Training Loss = 0.873)
-Validation Accuracy = 0.627
- (Training Accuracy = 0.690)
-
-EPOCH:  90 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.001 minutes
-Validation Loss = 1.074
- (Training Loss = 0.845)
-Validation Accuracy = 0.631
- (Training Accuracy = 0.700)
-
-EPOCH:  91 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.999 minutes
-Validation Loss = 1.100
- (Training Loss = 0.889)
-Validation Accuracy = 0.621
- (Training Accuracy = 0.680)
-
-EPOCH:  92 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.999 minutes
-Validation Loss = 1.067
- (Training Loss = 0.849)
-Validation Accuracy = 0.636
- (Training Accuracy = 0.701)
-
-EPOCH:  93 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.998 minutes
-Validation Loss = 1.087
- (Training Loss = 0.867)
-Validation Accuracy = 0.630
- (Training Accuracy = 0.689)
-
-EPOCH:  94 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.999 minutes
-Validation Loss = 1.105
- (Training Loss = 0.893)
-Validation Accuracy = 0.623
- (Training Accuracy = 0.685)
-
-EPOCH:  95 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.001 minutes
-Validation Loss = 1.113
- (Training Loss = 0.894)
-Validation Accuracy = 0.621
- (Training Accuracy = 0.687)
-
-EPOCH:  96 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.002 minutes
-Validation Loss = 1.080
- (Training Loss = 0.853)
-Validation Accuracy = 0.631
- (Training Accuracy = 0.699)
-
-EPOCH:  97 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.011 minutes
-Validation Loss = 1.101
- (Training Loss = 0.872)
-Validation Accuracy = 0.627
- (Training Accuracy = 0.689)
-
-EPOCH:  98 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.000 minutes
-Validation Loss = 1.089
- (Training Loss = 0.861)
-Validation Accuracy = 0.629
- (Training Accuracy = 0.696)
-
-EPOCH:  99 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 1.000 minutes
-Validation Loss = 1.074
- (Training Loss = 0.850)
-Validation Accuracy = 0.631
- (Training Accuracy = 0.700)
-
-EPOCH:  100 of 100 EPOCHS
-        batch  1 of  333
-        batch  26 of  333
-        batch  51 of  333
-        batch  76 of  333
-        batch  101 of  333
-        batch  126 of  333
-        batch  151 of  333
-        batch  176 of  333
-        batch  201 of  333
-        batch  226 of  333
-        batch  251 of  333
-        batch  276 of  333
-        batch  301 of  333
-        batch  326 of  333
-(7500, 32, 32, 3)
-evaluating..
-evaluating..
-Time: 0.999 minutes
-Validation Loss = 1.081
- (Training Loss = 0.846)
-Validation Accuracy = 0.627
- (Training Accuracy = 0.699)
-
-
-Elapsed Training Time: 101.201 minutes
-
-training_stats Saved As:  ./training_stats/training_stats_170413_0244.txt 
-
-Saving model..
-</pre>
-</div>
-</div>
-
-<div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_text output_error">
 <pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">ValueError</span>                                Traceback (most recent call last)
-<span class="ansi-green-fg">&lt;ipython-input-43-4b1dbeeb0c18&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-fg">()</span>
-<span class="ansi-green-intense-fg ansi-bold">     56</span>     print<span class="ansi-yellow-intense-fg ansi-bold">(</span><span class="ansi-blue-intense-fg ansi-bold">&#34;Saving model..&#34;</span><span class="ansi-yellow-intense-fg ansi-bold">)</span>
-<span class="ansi-green-intense-fg ansi-bold">     57</span>     saver <span class="ansi-yellow-intense-fg ansi-bold">=</span> tf<span class="ansi-yellow-intense-fg ansi-bold">.</span>train<span class="ansi-yellow-intense-fg ansi-bold">.</span>Saver<span class="ansi-yellow-intense-fg ansi-bold">(</span><span class="ansi-yellow-intense-fg ansi-bold">)</span>
-<span class="ansi-green-fg">---&gt; 58</span><span class="ansi-red-fg">     </span>saver<span class="ansi-yellow-intense-fg ansi-bold">.</span>save<span class="ansi-yellow-intense-fg ansi-bold">(</span>sess<span class="ansi-yellow-intense-fg ansi-bold">,</span> <span class="ansi-blue-intense-fg ansi-bold">&#39;./trained_models/sh_trained_traffic_sign_classifier_&#39;</span> <span class="ansi-yellow-intense-fg ansi-bold">+</span> model_timestamp<span class="ansi-yellow-intense-fg ansi-bold">)</span>
-<span class="ansi-green-intense-fg ansi-bold">     59</span>     print<span class="ansi-yellow-intense-fg ansi-bold">(</span><span class="ansi-blue-intense-fg ansi-bold">&#34;Model Saved&#34;</span><span class="ansi-yellow-intense-fg ansi-bold">)</span>
-<span class="ansi-green-intense-fg ansi-bold">     60</span>     print<span class="ansi-yellow-intense-fg ansi-bold">(</span><span class="ansi-yellow-intense-fg ansi-bold">)</span>
-
-<span class="ansi-green-fg">C:\Users\i\Anaconda3\envs\carnd-term1\lib\site-packages\tensorflow\python\training\saver.py</span> in <span class="ansi-cyan-fg">save</span><span class="ansi-blue-fg">(self, sess, save_path, global_step, latest_filename, meta_graph_suffix, write_meta_graph, write_state)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1312</span>     <span class="ansi-green-intense-fg ansi-bold">if</span> <span class="ansi-green-intense-fg ansi-bold">not</span> gfile<span class="ansi-yellow-intense-fg ansi-bold">.</span>IsDirectory<span class="ansi-yellow-intense-fg ansi-bold">(</span>os<span class="ansi-yellow-intense-fg ansi-bold">.</span>path<span class="ansi-yellow-intense-fg ansi-bold">.</span>dirname<span class="ansi-yellow-intense-fg ansi-bold">(</span>save_path<span class="ansi-yellow-intense-fg ansi-bold">)</span><span class="ansi-yellow-intense-fg ansi-bold">)</span><span class="ansi-yellow-intense-fg ansi-bold">:</span>
-<span class="ansi-green-intense-fg ansi-bold">   1313</span>       raise ValueError(
-<span class="ansi-green-fg">-&gt; 1314</span><span class="ansi-red-fg">           &#34;Parent directory of {} doesn&#39;t exist, can&#39;t save.&#34;.format(save_path))
-</span><span class="ansi-green-intense-fg ansi-bold">   1315</span> 
-<span class="ansi-green-intense-fg ansi-bold">   1316</span>     save_path <span class="ansi-yellow-intense-fg ansi-bold">=</span> os<span class="ansi-yellow-intense-fg ansi-bold">.</span>path<span class="ansi-yellow-intense-fg ansi-bold">.</span>dirname<span class="ansi-yellow-intense-fg ansi-bold">(</span>save_path<span class="ansi-yellow-intense-fg ansi-bold">)</span>
-
-<span class="ansi-red-fg">ValueError</span>: Parent directory of ./trained_models/sh_trained_traffic_sign_classifier_170413_0244 doesn&#39;t exist, can&#39;t save.</pre>
+<span class="ansi-cyan-fg">  File </span><span class="ansi-green-fg">&#34;&lt;ipython-input-133-7184ef30d0c3&gt;&#34;</span><span class="ansi-cyan-fg">, line </span><span class="ansi-green-fg">8</span>
+<span class="ansi-red-fg">    with tf.Session() as sess:</span>
+       ^
+<span class="ansi-red-fg">SyntaxError</span><span class="ansi-red-fg">:</span> invalid syntax
+</pre>
 </div>
 </div>
 
