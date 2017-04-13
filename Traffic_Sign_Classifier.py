@@ -923,6 +923,24 @@ def evaluate_data(X_data, y_data):
 
 # 
 
+# In[68]:
+
+from IPython import display
+
+tempx=np.asarray([])
+tempy=np.asarray([])
+for i in range(10):
+    tempx = np.append(tempx, i)
+    tempy = np.append(tempy, i**2)
+    plt.gca().cla() 
+    plt.plot(tempx,tempy,label='test')
+    plt.legend()
+    display.clear_output(wait=True)
+    display.display(plt.gcf()) 
+    time.sleep(0.5) 
+    print(tempx, tempy)
+
+
 # In[52]:
 
 ## SAMPLE DYNAMIC PLOT
@@ -986,7 +1004,7 @@ print('EPOCHS TRUNCATED TO:', EPOCHS, "EPOCHS for preliminary testing")
 #
 
 
-# In[59]:
+# In[60]:
 
 ##ATTEMPT TO WRITE ROUTINE FOR DYNAMIC UPDATING THE PLOT
 
@@ -1027,7 +1045,7 @@ plt.legend(handles=[blue_patch, black_patch, red_patch])
 plt.tight_layout()
 plt.show()
     
-def update_plot(epoch_x_axis, vloss, tloss, vaccu, taccu):
+def update_plot(plt, epoch_x_axis, vloss, tloss, vaccu, taccu):
     #update plots at each Epoch
     plt.subplot(311, title = "Loss vs Epoch")
     plt.plot(epoch_x_axis, vloss, 'b', epoch_x_axis, tloss, 'k')
@@ -1081,25 +1099,33 @@ with tf.Session() as sess:
         np.savetxt('./training_stats/training_stats.tmp.txt', training_stats)
         
         # dynamically plot training_stats
-        update_plot(i, validation_loss, training_loss, validation_accuracy, training_accuracy)
-        
-    tend = time.time()
-    print("\nElapsed Training Time: {:.3f} minutes".format(float( (time.time()-tstart) / 60 )))
-    
-    # use current time stamp as id for model and training_stats filenames
-    model_timestamp = time.strftime("%y%m%d_%H%M")
-    
-    # save training_stats
-    filename = './training_stats/training_stats_' + model_timestamp + '.txt'
-    np.savetxt(filename, training_stats)
-    print("\ntraining_stats Saved As: ", filename, "\n")    
+        #update_plot(i, validation_loss, training_loss, validation_accuracy, training_accuracy)
+        plt.subplot(311, title = "Loss vs Epoch")
+        plt.plot(epoch_x_axis, vloss, 'b', epoch_x_axis, tloss, 'k')
 
-    # save trained model
-    print("Saving model..")
-    saver = tf.train.Saver()
-    saver.save(sess, './trained_models/sh_trained_traffic_sign_classifier_' + model_timestamp)
-    print("Model Saved")
-    print()
+        plt.subplot(312, title="% Accuracy vs Epoch")
+        plt.plot(epoch_x_axis, vaccu, 'b', epoch_x_axis, taccu, 'k')
+        plt.axhline(req_accuracy, color='r')
+
+    
+    
+#     tend = time.time()
+#     print("\nElapsed Training Time: {:.3f} minutes".format(float( (time.time()-tstart) / 60 )))
+    
+#     # use current time stamp as id for model and training_stats filenames
+#     model_timestamp = time.strftime("%y%m%d_%H%M")
+    
+#     # save training_stats
+#     filename = './training_stats/training_stats_' + model_timestamp + '.txt'
+#     np.savetxt(filename, training_stats)
+#     print("\ntraining_stats Saved As: ", filename, "\n")    
+
+#     # save trained model
+#     print("Saving model..")
+#     saver = tf.train.Saver()
+#     saver.save(sess, './trained_models/sh_trained_traffic_sign_classifier_' + model_timestamp)
+#     print("Model Saved")
+#     print()
 
     
     
