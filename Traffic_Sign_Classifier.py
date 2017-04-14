@@ -43,7 +43,7 @@
 # ---
 # ## Step 0: Load The Data
 
-# In[17]:
+# In[1]:
 
 # download Cifar10 dataset
 from keras.datasets import cifar10
@@ -62,7 +62,7 @@ print("data loaded")
 print(X_train_ORIG.shape, y_test_ORIG.shape)
 
 
-# In[18]:
+# In[2]:
 
 ## I need a validation set, else cannot train my model..
 #    np.train_valid_split() (data, labels, valid_size=0.20, random_state=42)
@@ -138,7 +138,7 @@ X_train_ORIG, y_train_ORIG, X_valid_ORIG, y_valid_ORIG = stratified_dataset_spli
 print(X_train_ORIG.shape, y_train_ORIG.shape, X_valid_ORIG.shape, y_valid_ORIG.shape)
 
 
-# In[19]:
+# In[3]:
 
 """  
 ### Traffic Sign Data:
@@ -185,7 +185,7 @@ print('')  # hide echo of commented out code as string
 
 # ### Provide a Basic Summary of the Data Set Using Python, Numpy and/or Pandas
 
-# In[20]:
+# In[4]:
 
 import numpy as np
 
@@ -219,7 +219,7 @@ print("Number of testing examples    =", "{:5}".format(n_test),  ": {:4.1f}% of 
 # 
 # **NOTE:** It's recommended you start with something simple first. If you wish to do more, come back to it after you've completed the rest of the sections.
 
-# In[21]:
+# In[5]:
 
 ### Data exploration visualization code goes here.
 ### Feel free to use as many code cells as needed.
@@ -265,7 +265,7 @@ plt.show()
 print("figure saved as: 'data_plotted_image_distribution_amongst_classes.png'")
 
 
-# In[22]:
+# In[6]:
 
 # diplay list of sample images from training data set
 def display_images(images):
@@ -330,7 +330,7 @@ print("figure saved as: 'sample_traffic_signs_from_training_set.png'")
 
 # Use the code cell (or multiple code cells, if necessary) to implement the first step of your project.
 
-# In[23]:
+# In[7]:
 
 def test_reshaping_3D_into_4D():
     # grayscale images have no depth dimension
@@ -361,7 +361,7 @@ def test_reshaping_3D_into_4D():
 #test_reshaping_3D_into_4D()
 
 
-# In[24]:
+# In[8]:
 
 from skimage import color
 
@@ -407,7 +407,7 @@ fig = display_images([gray_train[1000]])
 print("figure saved as 'sample_grayscale-1channel_conversion.png'")
 
 
-# In[25]:
+# In[9]:
 
 # turn color data into grayscale image data
 from skimage import color
@@ -436,7 +436,7 @@ fig = display_images([X_train_gray[50], X_train_gray[500], X_train_gray[1000]])
 print("figure saved as 'sample_grayscale_conversions_single_channel.png'")
 
 
-# In[26]:
+# In[10]:
 
 # turn grayscale into 3channel rgb grayscale
 # (not ideal paramater-wise = duplicated data, but for shipping through my LeNet, it should remove shaping problems)
@@ -477,7 +477,7 @@ print("saved figure as 'sample_grayscale_1D_to_3D_conversion.png'")
 print("\nresulting images are darker and lighter than the single channel grayscale \n some ratios I've tried: 1/np.sqrt(3), 2*np.sqrt(3), (R:2/6 G:3/6 B:1/6) \n How do I create a 3-channel grayscale that looks visually identical to the 1-channel grayscale?")
 
 
-# In[27]:
+# In[11]:
 
 # Try per channel zero centering. Find mean for each channel, where the mean for that channel is across all training images
 # !! TERRIBLE RESULTS. tried a few learning_rates. NIX This technique !
@@ -531,7 +531,7 @@ def get_per_channel_mean_zero_centered_datasets(input_datasets):
 
 
 
-# In[28]:
+# In[12]:
 
 # Try per image zero centering. Find mean for each image, apply that mean to each channel in said image
 
@@ -582,7 +582,7 @@ def get_per_image_mean_centered_datasets(X_input_datasets):
     return X_output_datasets
 
 
-# In[29]:
+# In[13]:
 
 from sklearn.preprocessing import normalize
 from skimage import color
@@ -630,7 +630,7 @@ def get_normalized_images(image_sets):
     return [X_train_preprocessed, X_valid_preprocessed, X_test_preprocessed]
 
 
-# In[30]:
+# In[14]:
 
 # define training variables, constants
 
@@ -657,13 +657,13 @@ ksize = pool_strides
 
 # ### Model Architecture
 
-# In[31]:
+# In[15]:
 
 ### Define your architecture here.
 ### Feel free to use as many code cells as needed.
 
 
-# In[32]:
+# In[16]:
 
 """
 # This was for an attempt at running LeNet on 1-channel grayscale images. 
@@ -705,7 +705,7 @@ def get_conv_layer_given_filter_shape(x, filter_shape):
 ("")
 
 
-# In[33]:
+# In[17]:
 
 def get_conv_layer(x, conv_output_shape, pool_output_shape):
     input_height,  input_width,  input_depth  = x.get_shape().as_list()[1:]
@@ -743,7 +743,7 @@ def get_conv_layer(x, conv_output_shape, pool_output_shape):
     return conv_layer
 
 
-# In[34]:
+# In[18]:
 
 def get_fcc_layer(prev_layer, output_length):
     input_length  = prev_layer.get_shape().as_list()[1]
@@ -760,7 +760,7 @@ def get_fcc_layer(prev_layer, output_length):
     return fcc_layer
 
 
-# In[35]:
+# In[19]:
 
 from tensorflow.contrib.layers import flatten
 
@@ -796,7 +796,7 @@ def LeNet(x):
 # A validation set can be used to assess how well the model is performing. A low accuracy on the training and validation
 # sets imply underfitting. A high accuracy on the training set but low accuracy on the validation set implies overfitting.
 
-# In[36]:
+# In[20]:
 
 ### Train your model here.
 ### Calculate and report the accuracy on the training and validation set.
@@ -805,7 +805,7 @@ def LeNet(x):
 ### Feel free to use as many code cells as needed.
 
 
-# In[37]:
+# In[21]:
 
 ### Preprocess the data here. Preprocessing steps could include normalization, converting to grayscale, etc.
 ### Feel free to use as many code cells as needed.
@@ -822,7 +822,7 @@ X_valid_SHUFFLED, y_valid_SHUFFLED = shuffle(X_valid_ORIG, y_valid_ORIG)
     # don't need to shuffle test data
 
 
-# In[98]:
+# In[22]:
 
 ## initialize
 
@@ -894,11 +894,11 @@ training_stats = []
 
 # 
 
-# In[160]:
+# In[30]:
 
 # evaluation routine
 def evaluate_data(X_data, y_data):
-    #print("evaluating..")
+    print("evaluating..")
     sess = tf.get_default_session()
     total_loss = 0
     total_accuracy = 0
@@ -923,7 +923,7 @@ def evaluate_data(X_data, y_data):
     return total_accuracy, total_loss     
 
 
-# In[52]:
+# In[24]:
 
 ## SAMPLE DYNAMIC PLOT
 # http://stackoverflow.com/a/34486703/5411817
@@ -961,7 +961,7 @@ for f in range(5):
 get_ipython().magic('matplotlib inline')
 
 
-# In[163]:
+# In[25]:
 
 """
 # TEMP TRUNCATE DATA FOR Alpha TESTING the code
@@ -988,7 +988,7 @@ print('EPOCHS TRUNCATED TO:', EPOCHS, "EPOCHS for preliminary testing")
 print()
 
 
-# In[167]:
+# In[31]:
 
 #Training with DYNAMIC Validation/Loss PLOT Updates
 
@@ -999,18 +999,20 @@ from IPython import display
 import matplotlib.patches as mpatches
 
 # easy way to change figure size for this plot
-#from IPython.core.pylabtools import figsize
+from IPython.core.pylabtools import figsize
 # this doesn't work either
-
-
 # Initializations for Dynamic Plotting of training_stats during training
 
 plt.gca().cla()
 
 #seems to have no effect on this chart..
 # figure size in inches: width, height    
-#fig = plt.figure(1, figsize=(7, 7))
-#figsize(14, 7)   # this doesn't work either
+fig = plt.figure(1, figsize=(7, 7))
+figsize(14, 7)   # this doesn't work either
+
+# prevent overlapping of labels with subplots
+plt.tight_layout()
+
 
 # to display legend
 blue_patch  = mpatches.Patch(color='blue',  label='Validation Set')
@@ -1032,11 +1034,13 @@ def update_plot(plt, epoch_x_axis, vloss, tloss, vaccu, taccu):
     # that _should_ prevent flashing of plot. I did not get that method to work (yet)
     #  So I'm using "display" and plt.gca().cla()
  
-    #fig = plt.figure(1, figsize=(7, 7))
+    fig = plt.figure(1, figsize=(14, 7))
     #figsize(14, 14)   # this doesn't work either
     
     # prevent overlapping of labels with subplots
     plt.tight_layout()
+    
+    #TODO: x-axis should have tick marks ONLY at integers
 
     plt.subplot(311, title = "Loss vs Epoch")
     plt.plot(epoch_x_axis, vloss, 'b', epoch_x_axis, tloss, 'k')
@@ -1061,6 +1065,9 @@ def update_plot(plt, epoch_x_axis, vloss, tloss, vaccu, taccu):
     display.clear_output(wait=True)
     display.display(plt.gcf()) 
     #time.sleep(0.5)     
+
+    # prevent overlapping of labels with subplots
+    plt.tight_layout()
     
    
     
@@ -1073,7 +1080,7 @@ with tf.Session() as sess:
     print("Training... for", EPOCHS, "Epochs\n")
     tstart = time.time()
     for epoch in range(1, EPOCHS+1):
-#         print("EPOCH: ", epoch, "of", EPOCHS, "EPOCHS")
+        print("EPOCH: ", epoch, "of", EPOCHS, "EPOCHS")
         X_train, y_train = shuffle(X_train, y_train)
         t0 = time.time()
         for batch_start in range(0, num_examples, BATCH_SIZE):
@@ -1083,18 +1090,16 @@ with tf.Session() as sess:
             #train
             sess.run(training_operation, feed_dict = {x:features, y:labels, keep_probability: DROPOUT_ON})
             # printing doesn't work well with dynamic plot updates..
-            #if batch_start % 100 == 0:
-            #    print("        batch ", 1+batch_start//BATCH_SIZE, "of ", 1 + int(num_examples/BATCH_SIZE))#, "batches,  on EPOCH", epoch, "of", EPOCHS, "EPOCHS")
+            if batch_start % 100 == 0:
+                print("        batch ", 1+batch_start//BATCH_SIZE, "of ", 1 + int(num_examples/BATCH_SIZE))#, "batches,  on EPOCH", epoch, "of", EPOCHS, "EPOCHS")
                       
         # evaluate on validation set, and print results of model from this EPOCH
-#         print(X_valid.shape)
         validation_accuracy, validation_loss = evaluate_data(X_valid, y_valid)
         training_accuracy,   training_loss = evaluate_data(X_train, y_train)
         
-        # TODO: would be awesome to display live charts of these results, rather than this text output
-        # Text output does not work very well with dynamic plot (flashes off at every plot update/loop)
-        # However, with slow nature of training, perhaps it won't be too bad.
-# Printing causes plot to be too small        
+#         # TODO: would be awesome to display live charts of these results, rather than this text output
+#         # Text output does not work very well with dynamic plot (flashes off at every plot update/loop)
+#         # However, with slow nature of training, perhaps it won't be too bad.       
 #         print("Time: {:.3f} minutes".format(float( (time.time()-t0) / 60 )))
 #         print("Validation Loss = {:.3f}".format(validation_loss))
 #         print(" (Training Loss = {:.3f})".format(training_loss))
@@ -1104,7 +1109,9 @@ with tf.Session() as sess:
           
         # format for saving training_stats to datafile (each line is a new epoch)        
         training_stats.append([validation_loss, training_loss, validation_accuracy, training_accuracy])
+        #save incremental temp files in event of early fin
         np.savetxt('./training_stats/training_stats.tmp.txt', training_stats)
+        fig.savefig('./training_stats/training_stats.tmp.png')
         
         # format for dynamic plot - each axis to plot is a separate array       
         vloss.append(validation_loss)
@@ -1116,16 +1123,26 @@ with tf.Session() as sess:
         
         # dynamically plot training_stats
         update_plot(plt, epoch_x_axis, vloss, tloss, vaccu, taccu)
-        
+
+        # Text output does not work very well with dynamic plot (flashes off at every plot update/loop)
+        # However, with slow nature of training, perhaps it won't be too bad.
+        # Print Test After updating plot..
+        print("Time: {:.3f} minutes".format(float( (time.time()-t0) / 60 )))
+        print("Validation Loss = {:.3f}".format(validation_loss))
+        print(" (Training Loss = {:.3f})".format(training_loss))
+        print("Validation Accuracy = {:.3f}".format(validation_accuracy))
+        print(" (Training Accuracy = {:.3f})".format(training_accuracy))
+        print()
+         
     
     # return to state the remaining notebook cells expect
     get_ipython().magic('matplotlib inline')
     
     tend = time.time()
-    print("\nTotal Elapsed Training Time: {:.3f} minutes".format(float( (time.time()-tstart) / 60 )))
+    print("\nTotal Elapsed Training Time: {:.3f} minutes".format(float( (time.time()-tstart) / 60 )), "\n")
     
     # stats at timeof last EPOCH
-    print("Stats for EPOCH", epoch, ":")
+    print("Stats for EPOCH", epoch)
     print("Time: {:.3f} minutes".format(float( (time.time()-t0) / 60 )))
     print("Validation Loss = {:.3f}".format(validation_loss))
     print(" (Training Loss = {:.3f})".format(training_loss))
@@ -1158,7 +1175,7 @@ print("Figure saved as " + plot_filename + "\n")
 get_ipython().magic('matplotlib inline')
 
 
-# In[133]:
+# In[ ]:
 
 import time
 
@@ -1233,7 +1250,7 @@ with tf.Session() as sess:
     print()
 
 
-# In[47]:
+# In[ ]:
 
 with tf.Session() as sess:
  
@@ -1255,7 +1272,7 @@ with tf.Session() as sess:
     print()
 
 
-# In[51]:
+# In[ ]:
 
 assert("Only Run This Cell IF Need to  Read and Plot an older, saved, training_stats file" == 
        "New TRAINING routine plots this chart LIVE While Training")) #IF not retraining right now - just resetting the kernal (and running all except training and plotting cells)")
@@ -1399,7 +1416,7 @@ print("Figure saved as " + filename + "\n")
 #assert ('yes' == 'no')
 
 
-# In[27]:
+# In[ ]:
 
 # test the trained model
 with tf.Session() as sess:
@@ -1429,13 +1446,13 @@ assert ("STOP HERE" == "Nothing for Cifar10 to see below here - it's Traffic Sig
 
 # ### Load and Output the Images
 
-# In[28]:
+# In[ ]:
 
 #import numpy as np
 #import tensorflow as ts
 
 
-# In[29]:
+# In[ ]:
 
 ### Load the images and plot them here.
 ### Feel free to use as many code cells as needed.
@@ -1458,7 +1475,7 @@ with tf.Session() as sess:
 
 
 
-# In[30]:
+# In[ ]:
 
 import numpy as np
 import glob
@@ -1497,7 +1514,7 @@ print('\nImporting done...', len(web_datasets_ORIG), "sets of traffic sign image
 
 # 
 
-# In[31]:
+# In[ ]:
 
 # pre-process images
 
@@ -1514,7 +1531,7 @@ X_set1, X_set2, X_set3 = get_per_image_mean_centered_datasets(web_datasets_ORIG)
 
 # ### Predict the Sign Type for Each Image
 
-# In[33]:
+# In[ ]:
 
 ### Run the predictions here and use the model to output the prediction for each image.
 ### Make sure to pre-process the images with the same pre-processing pipeline used earlier.
@@ -1591,7 +1608,7 @@ for set in [signs_set1, signs_set2]:
 # Signs 1, 4: I expected rubbish responses to these rubbish images. Never-the-less, I see no resemblence to what it _did_ choose.  
 #     I guess NaN was not an option?  
 
-# In[34]:
+# In[ ]:
 
 ### Calculate the accuracy for these 5 new images. 
 ### For example, if the model predicted 1 out of 5 signs correctly, it's 20% accurate on these new images.
@@ -1644,7 +1661,7 @@ print("Classifier was ", 100*2//6, "% accurate on the new images, getting 2 of 6
 # 
 # Looking just at the first row we get `[ 0.34763842,  0.24879643,  0.12789202]`, you can confirm these are the 3 largest probabilities in `a`. You'll also notice `[3, 0, 5]` are the corresponding indices.
 
-# In[35]:
+# In[ ]:
 
 ### Print out the top five softmax probabilities for the predictions on the German traffic sign images found on the web. 
 ### Feel free to use as many code cells as needed.
@@ -1673,7 +1690,7 @@ for i in range(num_images):
  
 
 
-# In[36]:
+# In[ ]:
 
 """
 - Interesting how cropping changed the predictions.   
@@ -1686,7 +1703,7 @@ for i in range(num_images):
 ("")
 
 
-# In[37]:
+# In[ ]:
 
 # This is total duplication of above cell. (Not DRY)
 # EXCEPT: runing it on _X_set2, set_index==1 instead
@@ -1717,7 +1734,7 @@ for i in range(num_images):
  
 
 
-# In[38]:
+# In[ ]:
 
 # Second set of Images
 """
