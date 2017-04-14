@@ -923,34 +923,6 @@ def evaluate_data(X_data, y_data):
     return total_accuracy, total_loss     
 
 
-# In[86]:
-
-## doesn't work. still don't know how to use this magic word
-"""
-%matplotlib notebook
-
-tempx= []
-tempy= []
-for i in range(10):
-    tempx = np.append(tempx, i)
-    tempy = np.append(tempy, i**2)
-    plt.gca().cla() 
-    plt.plot(tempx,tempy,label='test')
-    plt.legend()
-    plt.show()
-    #display.clear_output(wait=True)
-    #display.display(plt.gcf()) 
-    time.sleep(0.5) 
-    print(tempx, tempy)
-    
-# prevent second copy of plot at completion of the cell/loop
-% matplotlib inline  
-
-print("done")
-"""
-print()
-
-
 # In[52]:
 
 ## SAMPLE DYNAMIC PLOT
@@ -989,37 +961,13 @@ for f in range(5):
 get_ipython().magic('matplotlib inline')
 
 
-# In[97]:
-
-from IPython import display
-
-tempx= []
-tempy= []
-for i in range(10):
-    tempx = np.append(tempx, i)
-    tempy = np.append(tempy, i**2)
-    plt.gca().cla() 
-    #plt.plot(tempx,tempy,label='test')
-    plt.plot(tempx,tempy,label=tempy)
-    plt.legend()
-    display.clear_output(wait=True)
-    display.display(plt.gcf()) 
-    time.sleep(0.5) 
-    print(tempx, tempy)
-    print()
-    
-# prevent second copy of plot at completion of the cell/loop
-get_ipython().magic('matplotlib inline')
-
-print("done")
-
-
 # In[129]:
 
+"""
 # TEMP TRUNCATE DATA FOR Alpha TESTING the code
 
 # truncate the training set to be just a bit larger than the BATCH_SIZE (so run at least 2 batches per epoch)
-tr = int(BATCH_SIZE * .7)#1.2)
+tr = int(BATCH_SIZE * 1.2)
 # truncate validation (and training??) set to each be about 15% of the training set size
 va = te = int(tr * 0.2)
 
@@ -1035,7 +983,8 @@ print('DATA TRUNCATED TO:', len(X_train), "SAMPLES for preliminary testing")
 
 EPOCHS = 4
 print('EPOCHS TRUNCATED TO:', EPOCHS, "EPOCHS for preliminary testing")
-#
+"""
+print()
 
 
 # In[152]:
@@ -1287,26 +1236,25 @@ with tf.Session() as sess:
 
 # In[51]:
 
-# assert("THEN no need to display empty plot" == 
-#        "IF not retraining right now - just resetting the kernal (and running all except training and plotting cells)"
-#       )
+assert("Only Run This Cell IF Need to  Read and Plot an older, saved, training_stats file" == 
+       "New TRAINING routine plots this chart LIVE While Training")) #IF not retraining right now - just resetting the kernal (and running all except training and plotting cells)")
 
 # for displaying a legend
 import matplotlib.patches as mpatches
 
 def read_training_stats_from_file():
-    # IF read a model from disk, MUST set model_timestamp associated with the filename !! 
-    # else will run into error when saving the figure
-    
-    assert("did you update" == "model_timestamp??")
-    # Update model_timestamp to Read the training_stats from disk
-    model_timestamp = '170406_2032'
-    
-    training_stats_filename = './training_stats/training_stats_' + model_timestamp + '.txt'
-    training_stats_read_from_disk = np.loadtxt(training_stats_filename)
-    print(' read training_stats from ', training_stats_filename)
-    
-    return [model_timestamp, training_stats_read_from_disk]
+   # IF read a model from disk, MUST set model_timestamp associated with the filename !! 
+   # else will run into error when saving the figure
+   
+   assert("did you update" == "model_timestamp??")
+   # Update model_timestamp to Read the training_stats from disk
+   model_timestamp = '170406_2032'
+   
+   training_stats_filename = './training_stats/training_stats_' + model_timestamp + '.txt'
+   training_stats_read_from_disk = np.loadtxt(training_stats_filename)
+   print(' read training_stats from ', training_stats_filename)
+   
+   return [model_timestamp, training_stats_read_from_disk]
 
 # Uncomment, and update "model_timestamp" Inside the function, to Read the training_stats from disk
 #model_timestamp, training_stats = read_training_stats_from_file()
@@ -1316,10 +1264,10 @@ num_epochs = len(training_stats)
 vloss, tloss, vaccu, taccu = [[],[],[],[]]
 epoch_x_axis = range(1, num_epochs+1)
 for i in range(len(training_stats)):
-    vloss.append(training_stats[i][0])
-    tloss.append(training_stats[i][1])
-    vaccu.append(training_stats[i][2])
-    taccu.append(training_stats[i][3])
+   vloss.append(training_stats[i][0])
+   tloss.append(training_stats[i][1])
+   vaccu.append(training_stats[i][2])
+   taccu.append(training_stats[i][3])
 
 # figure size in inches: width, height    
 fig = plt.figure(1, figsize=(7, 7))
@@ -1426,7 +1374,7 @@ print("Figure saved as " + filename + "\n")
     # underfitting if:  low accuracy on training and validation sets.
     # overfitting  if: high accuracy on training but low accuracy on validation sets.
 
-assert (validation_accuracy >= 0.9300)
+#assert (validation_accuracy >= 0.9300)
 #assert ('yes' == 'no')
 
 
@@ -1443,6 +1391,11 @@ with tf.Session() as sess:
     print("Test Accuracy = {:.3f}".format(test_accuracy))
     
 #assert ('yes' == 'no')
+
+
+# In[ ]:
+
+assert ("STOP HERE" == "Nothing for Cifar10 to see below here - it's Traffic Signs only")
 
 
 # ---
