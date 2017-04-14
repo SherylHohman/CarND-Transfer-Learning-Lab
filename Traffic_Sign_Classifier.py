@@ -1038,7 +1038,7 @@ print('EPOCHS TRUNCATED TO:', EPOCHS, "EPOCHS for preliminary testing")
 #
 
 
-# In[142]:
+# In[152]:
 
 ##ATTEMPT TO WRITE ROUTINE FOR DYNAMIC UPDATING THE PLOT
 
@@ -1052,11 +1052,9 @@ import matplotlib.patches as mpatches
 
 plt.gca().cla()
 
-# prevent overlapping of labels with subplots
-plt.tight_layout()
-
+#seems to have no effect on this chart..
 # figure size in inches: width, height    
-fig = plt.figure(1, figsize=(7, 7))
+#fig = plt.figure(1, figsize=(7, 7))
 
 # to display legend
 blue_patch  = mpatches.Patch(color='blue',  label='Validation Set')
@@ -1078,11 +1076,9 @@ def update_plot(plt, epoch_x_axis, vloss, tloss, vaccu, taccu):
     # that _should_ prevent flashing of plot. I did not get that method to work (yet)
     #  So I'm using "display" and plt.gca().cla()
  
+    fig = plt.figure(1, figsize=(15, 15))
     # prevent overlapping of labels with subplots
-    #plt.tight_layout()
-    
-    ##
-    #plt.gca().cla() 
+    plt.tight_layout()
 
     plt.subplot(311, title = "Loss vs Epoch")
     plt.plot(epoch_x_axis, vloss, 'b', epoch_x_axis, tloss, 'k')
@@ -1097,16 +1093,12 @@ def update_plot(plt, epoch_x_axis, vloss, tloss, vaccu, taccu):
     plt.subplot(313, title="% Accuracy vs Epoch")
     plt.plot(epoch_x_axis, vaccu, 'b', epoch_x_axis, taccu, 'k')
     plt.axhline(req_accuracy, color='r')
-    # overlay legend on "Accuracy" (the most spacious) subplot
+    # overlay legend on (currently selected) "Accuracy" plot(the most spacious) subplot
     plt.legend(handles=[blue_patch, black_patch, red_patch])
-    plt.legend()
- 
 
     display.clear_output(wait=True)
     display.display(plt.gcf()) 
-    #time.sleep(0.5) 
-    
-    plt.tight_layout()
+    #time.sleep(0.5)     
     
    
     
@@ -1137,9 +1129,16 @@ with tf.Session() as sess:
         validation_accuracy, validation_loss = evaluate_data(X_valid, y_valid)
         training_accuracy,   training_loss = evaluate_data(X_train, y_train)
         
-#         # TODO: would be awesome to display live charts of these results, rather than this text output
-        ## text output of progress WAS here..
-        
+        # TODO: would be awesome to display live charts of these results, rather than this text output
+        # Text output does not work very well with dynamic plot (flashes off at every plot update/loop)
+        # However, with slow nature of training, perhaps it won't be too bad.
+        print("Time: {:.3f} minutes".format(float( (time.time()-t0) / 60 )))
+        print("Validation Loss = {:.3f}".format(validation_loss))
+        print(" (Training Loss = {:.3f})".format(training_loss))
+        print("Validation Accuracy = {:.3f}".format(validation_accuracy))
+        print(" (Training Accuracy = {:.3f})".format(training_accuracy))
+        print()
+          
         # format for saving training_stats to datafile (each line is a new epoch)        
         training_stats.append([validation_loss, training_loss, validation_accuracy, training_accuracy])
         np.savetxt('./training_stats/training_stats.tmp.txt', training_stats)
@@ -1180,6 +1179,10 @@ with tf.Session() as sess:
     print("Model Saved As: ", model_filename, "\n")
     print()
 
+# model_timestamp for figure should match the timestamp from the model's file, not the current timestamp (see prev cell and top of this cell)
+plot_filename = './training_stats/training_stats_' + model_timestamp + '.png'
+fig.savefig(filename)  # results in 175x175 px image
+print("Figure saved as " + filename + "\n")
 
 # return to state the remaining notebook cells expect
 get_ipython().magic('matplotlib inline')
@@ -1189,7 +1192,8 @@ get_ipython().magic('matplotlib inline')
 
 import time
 
-assert("no, Don't Retrain Model !"  ==  
+assert("training now takes place in cell above" == "dynamic stats plot _DURING_ Training :-)")
+#assert("no, Don't Retrain Model !"  ==  
 #        "Re-Running cells for later sections of the notebook. AND Want To Use The already TRAINED NETWORK"
 #       )
 

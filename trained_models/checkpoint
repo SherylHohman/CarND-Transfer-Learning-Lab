@@ -1,0 +1,2 @@
+model_checkpoint_path: "sh_trained_traffic_sign_classifier_170413_1722"
+all_model_checkpoint_paths: "sh_trained_traffic_sign_classifier_170413_1722"
