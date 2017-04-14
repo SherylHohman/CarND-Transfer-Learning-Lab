@@ -961,7 +961,7 @@ for f in range(5):
 get_ipython().magic('matplotlib inline')
 
 
-# In[25]:
+# In[51]:
 
 """
 # TEMP TRUNCATE DATA FOR Alpha TESTING the code
@@ -979,16 +979,16 @@ y_valid = y_valid[0:va]
 X_test  = X_test[0:te]
 y_test  = y_test[0:te]
 print('DATA TRUNCATED TO:', len(X_train), "SAMPLES for preliminary testing")
- 
-
-EPOCHS = 4
-print('EPOCHS TRUNCATED TO:', EPOCHS, "EPOCHS for preliminary testing")
 """ 
+
+#EPOCHS = 2
+#print('EPOCHS TRUNCATED TO:', EPOCHS, "EPOCHS for preliminary testing")
+ 
 
 print()
 
 
-# In[31]:
+# In[57]:
 
 #Training with DYNAMIC Validation/Loss PLOT Updates
 
@@ -1011,7 +1011,7 @@ fig = plt.figure(1, figsize=(7, 7))
 figsize(14, 7)   # this doesn't work either
 
 # prevent overlapping of labels with subplots
-plt.tight_layout()
+#plt.tight_layout()
 
 
 # to display legend
@@ -1034,30 +1034,34 @@ def update_plot(plt, epoch_x_axis, vloss, tloss, vaccu, taccu):
     # that _should_ prevent flashing of plot. I did not get that method to work (yet)
     #  So I'm using "display" and plt.gca().cla()
  
-    fig = plt.figure(1, figsize=(14, 7))
+    #plt.gca().cla()
+    
+    fig = plt.figure(1, figsize=(7, 8))
     #figsize(14, 14)   # this doesn't work either
     
     # prevent overlapping of labels with subplots
-    plt.tight_layout()
+    #plt.tight_layout()
     
     #TODO: x-axis should have tick marks ONLY at integers
 
     plt.subplot(311, title = "Loss vs Epoch")
-    plt.plot(epoch_x_axis, vloss, 'b', epoch_x_axis, tloss, 'k')
+    # plot starting loss as "infinite", at epoch "0"
+    large_starting_loss = max(vloss+tloss) * (1 + 1/epoch)
+    plt.plot([0]+epoch_x_axis, [large_starting_loss]+vloss, 'b', [0]+epoch_x_axis, [large_starting_loss]+tloss, 'k')
     
     # zoomed in accuracy plot, highlighting variance around req_accuracy
     plt.subplot(312, title="% Accuracy vs Epoch, zoomed in ")
     plt.plot(epoch_x_axis, vaccu, 'b', epoch_x_axis, taccu, 'k')
     plt.axhline(req_accuracy, color='r')
-    #plt.ylim((.9000, 1.0100))
     #determine scale for zoom
-    ymin = min(req_accuracy, vaccu[-1], taccu[-1]) * 0.8
-    ymax = max(req_accuracy, vaccu[-1], taccu[-1]) * 1.2
+    ymin = min(req_accuracy, vaccu[-1], taccu[-1]) * 0.9
+    ymax = max(req_accuracy, vaccu[-1], taccu[-1]) * 1.1
     plt.ylim((ymin, ymax))
     
 
     plt.subplot(313, title="% Accuracy vs Epoch")
-    plt.plot(epoch_x_axis, vaccu, 'b', epoch_x_axis, taccu, 'k')
+    # plot starting accuracy as zero , epoch "0"
+    plt.plot([0]+epoch_x_axis, [0]+vaccu, 'b', [0]+epoch_x_axis, [0]+taccu, 'k')
     plt.axhline(req_accuracy, color='r')
     # overlay legend on (currently selected) "Accuracy" plot(the most spacious) subplot
     plt.legend(handles=[blue_patch, black_patch, red_patch])
@@ -1067,13 +1071,14 @@ def update_plot(plt, epoch_x_axis, vloss, tloss, vaccu, taccu):
     #time.sleep(0.5)     
 
     # prevent overlapping of labels with subplots
-    plt.tight_layout()
+    #plt.tight_layout()
     
    
     
 # train the model
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
+
     num_examples = len(X_train)
     training_stats = []
     
@@ -1096,17 +1101,7 @@ with tf.Session() as sess:
         # evaluate on validation set, and print results of model from this EPOCH
         validation_accuracy, validation_loss = evaluate_data(X_valid, y_valid)
         training_accuracy,   training_loss = evaluate_data(X_train, y_train)
-        
-#         # TODO: would be awesome to display live charts of these results, rather than this text output
-#         # Text output does not work very well with dynamic plot (flashes off at every plot update/loop)
-#         # However, with slow nature of training, perhaps it won't be too bad.       
-#         print("Time: {:.3f} minutes".format(float( (time.time()-t0) / 60 )))
-#         print("Validation Loss = {:.3f}".format(validation_loss))
-#         print(" (Training Loss = {:.3f})".format(training_loss))
-#         print("Validation Accuracy = {:.3f}".format(validation_accuracy))
-#         print(" (Training Accuracy = {:.3f})".format(training_accuracy))
-#         print()
-          
+                 
         # format for saving training_stats to datafile (each line is a new epoch)        
         training_stats.append([validation_loss, training_loss, validation_accuracy, training_accuracy])
         #save incremental temp files in event of early fin
@@ -1124,39 +1119,60 @@ with tf.Session() as sess:
         # dynamically plot training_stats
         update_plot(plt, epoch_x_axis, vloss, tloss, vaccu, taccu)
 
+        # Print stats AFTER plot update, since plot_update clears it out (deletes it)
         # Text output does not work very well with dynamic plot (flashes off at every plot update/loop)
         # However, with slow nature of training, perhaps it won't be too bad.
         # Print Test After updating plot..
-        print("Time: {:.3f} minutes".format(float( (time.time()-t0) / 60 )))
+        print("Stats for EPOCH", epoch)
+        print("----------------------------")
         print("Validation Loss = {:.3f}".format(validation_loss))
         print(" (Training Loss = {:.3f})".format(training_loss))
         print("Validation Accuracy = {:.3f}".format(validation_accuracy))
         print(" (Training Accuracy = {:.3f})".format(training_accuracy))
-        print()
-         
+        print("in {:.3f} minutes".format(float( (time.time()-t0) / 60 )))
+        print()        
     
-    # return to state the remaining notebook cells expect
+    # return to state the remaining notebook cells expect; 
     get_ipython().magic('matplotlib inline')
     
     tend = time.time()
     print("\nTotal Elapsed Training Time: {:.3f} minutes".format(float( (time.time()-tstart) / 60 )), "\n")
     
-    # stats at timeof last EPOCH
-    print("Stats for EPOCH", epoch)
-    print("Time: {:.3f} minutes".format(float( (time.time()-t0) / 60 )))
-    print("Validation Loss = {:.3f}".format(validation_loss))
-    print(" (Training Loss = {:.3f})".format(training_loss))
-    print("Validation Accuracy = {:.3f}".format(validation_accuracy))
-    print(" (Training Accuracy = {:.3f})".format(training_accuracy))
-    print()
-    
     # use current time stamp as id for model and training_stats filenames
     model_timestamp = time.strftime("%y%m%d_%H%M")
+        
+    # save trained model
+    print("saving model..")
+    saver = tf.train.Saver()
+    model_filename = './trained_models/sh_trained_traffic_sign_classifier_' + model_timestamp
+    saver.save(sess, model_filename)
+    print("Model Saved As: ", model_filename)
+    print()
     
-    # save training_stats
-    stats_filename = './training_stats/training_stats_' + model_timestamp + '.txt'
-    np.savetxt(filename, training_stats)
-    print("\ntraining_stats Saved As: ", stats_filename, "\n")    
+    # end of tf session
+
+# model_timestamp for figures should match the timestamp from the model's file, not the current timestamp (see prev cell and top of this cell)
+
+# save training_stats
+stats_filename = './training_stats/training_stats_' + model_timestamp + '.txt'
+np.savetxt(stats_filename, training_stats)
+print("Training Stats saved as:", stats_filename)    
+
+# save plots
+plot_filename = './training_stats/training_stats_' + model_timestamp + '.png'
+fig.savefig(plot_filename)  # results in 175x175 px image
+print("Training Plots saved as: " + plot_filename + "\n")
+
+# return to state the remaining notebook cells expect
+#supress second instance of plot from showing at cell completion
+get_ipython().magic('matplotlib inline')
+
+
+# In[38]:
+
+assert("Use in case of emergency" = "ie interruption before Trained Model could be saved")
+with tf.Session() as sess:
+    saver.restore(sess, tf.train.latest_checkpoint('./trained_models/.'))
 
     # save trained model
     print("saving model..")
@@ -1165,14 +1181,22 @@ with tf.Session() as sess:
     saver.save(sess, model_filename)
     print("Model Saved As: ", model_filename, "\n")
     print()
+    
+    # end tf session
+    
+# save training_stats
+stats_filename = './training_stats/training_stats_' + model_timestamp + '.txt'
+np.savetxt(stats_filename, training_stats)
+print("Training Stats saved as:", stats_filename)    
 
 # model_timestamp for figure should match the timestamp from the model's file, not the current timestamp (see prev cell and top of this cell)
 plot_filename = './training_stats/training_stats_' + model_timestamp + '.png'
 fig.savefig(plot_filename)  # results in 175x175 px image
-print("Figure saved as " + plot_filename + "\n")
+print("Training Plots saved as: " + plot_filename + "\n")
 
 # return to state the remaining notebook cells expect
 get_ipython().magic('matplotlib inline')
+
 
 
 # In[ ]:
@@ -1250,29 +1274,7 @@ with tf.Session() as sess:
     print()
 
 
-# In[ ]:
-
-with tf.Session() as sess:
- 
-    # save trained model
-    print("Saving model..")
-    saver = tf.train.Saver()
-    saver.save(sess, './trained_models/sh_trained_traffic_sign_classifier_' + model_timestamp)
-    print("Model Saved")
-    print()
-
-    if validation_accuracy >= 0.93:
-        print(" !! Congratulations!! Your model meets the minimum required Validation Accuracy of 0.93")
-        print("   You may now run your model on the Test Set :-)")
-    else:
-        print("KEEP WORKING ON YOUR MODEL to acheive a minimum Validation Accuracy of 0.93")
-        print("underfitting if:  low accuracy on training and low accuracy on validation sets.")
-        print("overfitting  if: high accuracy on training but low accuracy on validation sets.")
-
-    print()
-
-
-# In[ ]:
+# In[49]:
 
 assert("Only Run This Cell IF Need to  Read and Plot an older, saved, training_stats file" == 
        "New TRAINING routine plots this chart LIVE While Training")) #IF not retraining right now - just resetting the kernal (and running all except training and plotting cells)")
@@ -1300,7 +1302,7 @@ def read_training_stats_from_file():
 
 num_epochs = len(training_stats)
 vloss, tloss, vaccu, taccu = [[],[],[],[]]
-epoch_x_axis = range(1, num_epochs+1)
+epoch_x_axis = list(range(1, num_epochs+1))
 for i in range(len(training_stats)):
    vloss.append(training_stats[i][0])
    tloss.append(training_stats[i][1])
@@ -1316,11 +1318,12 @@ red_patch   = mpatches.Patch(color='black', label='Training Set')
 black_patch = mpatches.Patch(color='red',   label='Minimum 93.00% Validation Accuracy Required')
 
 plt.subplot(311, title = "Loss vs Epoch")
-plt.plot(epoch_x_axis, vloss, 'b', epoch_x_axis, tloss, 'k')
+large_starting_loss = max(vloss+tloss) * 1.1
+plt.plot([0]+epoch_x_axis, [large_starting_loss]+vloss, 'b', [0]+epoch_x_axis, [large_starting_loss]+tloss, 'k')
 
 plt.subplot(313, title="% Accuracy vs Epoch")
 req_accuracy = 0.9300
-plt.plot(epoch_x_axis, vaccu, 'b', epoch_x_axis, taccu, 'k')
+plt.plot([0]+epoch_x_axis, [0]+vaccu, 'b', [0]+epoch_x_axis, [0]+taccu, 'k')
 plt.axhline(req_accuracy, color='r')
 
 # overlay legend on "Accuracy" (the most spacious) subplot
@@ -1330,7 +1333,11 @@ plt.legend(handles=[blue_patch, black_patch, red_patch])
 plt.subplot(312, title="% Accuracy vs Epoch, zoomed in ")
 plt.plot(epoch_x_axis, vaccu, 'b', epoch_x_axis, taccu, 'k')
 plt.axhline(req_accuracy, color='r')
-plt.ylim((.9000, 1.0100))
+#plt.ylim((.9000, 1.0100))
+#determine scale for zoom
+ymin = min(req_accuracy, vaccu[-1], taccu[-1]) * 0.9
+ymax = max(req_accuracy, vaccu[-1], taccu[-1]) * 1.1
+plt.ylim((ymin, ymax))
 
 # prevent overlapping of labels with subplots
 plt.tight_layout()
@@ -1338,71 +1345,10 @@ plt.show()
 
 
 # model_timestamp for figure should match the timestamp from the model's file, not the current timestamp (see prev cell and top of this cell)
-filename = './training_stats/training_stats_' + model_timestamp + '.png'
+filename = './training_stats/training_stats_' + model_timestamp + '-revisited.png'
 
 fig.savefig(filename)  # results in 175x175 px image
 print("Figure saved as " + filename + "\n")
-
-
-# In[ ]:
-
-## Compare Models
-# load figure training_stats_plotted-170327_1518.png
-# Model Architecture:
-#  - Lenet5: no dropout, no augmentantion, 
-#  - Pre-proccessing: per image mean centered (-1,1) (not standardized though)
-# Comment on figure/training/model:
-#  Achieved required accuracy, but..
-#  -- the loss chart shows that our model is overfitting to the training data:
-#  -- as the training achieves 0% loss, the loss on validation set instead increases
-#  Two methods to reduce overfitting are:
-#  - add dropout layers: 
-#  -- after the first fcc_layer, or after the firtst and second fcc_layers.
-#  -- good dropout value is generally .5 (keep_prob = 0.5)
-#  - augment the training data:
-#  -- on each batch, add a random rotation, zoom, color-cast/brightness, shift image up or down, etc to the entire batch
-#  Also, it seems that the learning rate could be decreased partway through training
-#  - not too bad on this model (was Very apparent on another model)
-#  -- as the accuracy seems to level out, but Oscillate once it's leveled out,
-#  -- I wonder if lowering the training rate at that point would be useful.
-#  -- maybe something that monitors the  accuracy, and notices once it's rather flat, but oscillates, then it can 
-#  -- automatically decrease the learning rate by some set amount. Perhaps divide by 10 ?
-#  -- Dunno, But this oscillation appears to me to be a symptom of yaking too large a step. Great at first, but then
-#  -- as it hones in to a minimum, decreasing the step size may enable it to land at said assumed minimum. ??
-#  -- This could be a good experiment to try.
-
-## Add Dropouts after fcc_3 and fcc_4, with keep_probability = 0.5
-# load figure training_stats_plotted-??????????.png
-# Model Architecture:
-#  - Lenet5: added dropout to previous architecture. No augmentantion, 
-#  - Pre-proccessing (same as previous model): per image mean centered (-1,1) (not standardized though)
-# Results
-#  - Overall Better, I think..
-# Training Model did not reach 0.000 loss or 100% accuracy, though it got very close. 
-# -- The Previous model definitely saturated out, perfectly (overfitting)
-#  - It took longer to train -"bumpy" it oscillates more frequently, however it is also a steadier average;
-#  -- ie the oscillations are shallower. In this way, it seems slightly more stable
-#  - Total validation loss is lower !
-#  - Validation Accuracy is about the same. It might not reach quite as high a max, but again, the oscillations are shallower.
-#  - Training Accuracy is slightly lower; still greater than 99% - It didn't reach perfect fit in 100 Epochs. Perhaps eventually it would ?
-#  - The difference between Training and Validation loss is less; the graphs are closer.
-# I'm not convinced that lowering the learning rate would be as helpful, as it looked in the previous model.
-# I probably will not run that experiment on either model.
-# Well, if I did, I'd probably do something like, when Validation Accuracy is 93% or 95%, divide learning rate by 10
-# That's quick and dirty: using knowledge from this pre3vious graph to inform a future model.
-# Ideally, it'd mathematically be programmed in. But that's more work than it's worth for this project.
-# The interest here, is to see if it's something that would even make sense to do - does it affect the model or no?
-
-# Would like to see how Augmentation would affect the training graphs. This model performs well enough, however to move on.
-#   It's more important to complete this project right now.  Perhaps Augmentation (or even inception) can be done at another time
-
-
-## Add randomized Augmentation to each batch (generate randomize settings, apply that settting to entire batch of images)
-# load figure training_stats_plotted-??????????.png
-# Model Architecture:
-#  - Lenet5: added augmentation to previous architecture.
-#  - Pre-proccessing (same as previous model): per image mean centered (-1,1) (not standardized though)
-# 
 
 
 # In[ ]:
@@ -1416,7 +1362,7 @@ print("Figure saved as " + filename + "\n")
 #assert ('yes' == 'no')
 
 
-# In[ ]:
+# In[48]:
 
 # test the trained model
 with tf.Session() as sess:
@@ -1433,7 +1379,7 @@ with tf.Session() as sess:
 
 # In[ ]:
 
-assert ("STOP HERE" == "Nothing for Cifar10 to see below here - it's Traffic Signs only")
+assert ("STOP HERE" == "Nothing for Cifar10 to see here - it's Traffic Signs only below this line")
 
 
 # ---
@@ -1457,7 +1403,6 @@ assert ("STOP HERE" == "Nothing for Cifar10 to see below here - it's Traffic Sig
 ### Load the images and plot them here.
 ### Feel free to use as many code cells as needed.
 
-# SH TODO: Load Saved Model
 # # save trained model
 # print("Saving model..")
 # saver = tf.train.Saver()
