@@ -894,11 +894,11 @@ training_stats = []
 
 # 
 
-# In[39]:
+# In[160]:
 
 # evaluation routine
 def evaluate_data(X_data, y_data):
-    print("evaluating..")
+    #print("evaluating..")
     sess = tf.get_default_session()
     total_loss = 0
     total_accuracy = 0
@@ -961,13 +961,13 @@ for f in range(5):
 get_ipython().magic('matplotlib inline')
 
 
-# In[129]:
+# In[163]:
 
 """
 # TEMP TRUNCATE DATA FOR Alpha TESTING the code
 
 # truncate the training set to be just a bit larger than the BATCH_SIZE (so run at least 2 batches per epoch)
-tr = int(BATCH_SIZE * 1.2)
+tr = int(BATCH_SIZE * 0.5)#1.2)
 # truncate validation (and training??) set to each be about 15% of the training set size
 va = te = int(tr * 0.2)
 
@@ -983,19 +983,25 @@ print('DATA TRUNCATED TO:', len(X_train), "SAMPLES for preliminary testing")
 
 EPOCHS = 4
 print('EPOCHS TRUNCATED TO:', EPOCHS, "EPOCHS for preliminary testing")
-"""
+""" 
+
 print()
 
 
-# In[152]:
+# In[167]:
 
-##ATTEMPT TO WRITE ROUTINE FOR DYNAMIC UPDATING THE PLOT
+#Training with DYNAMIC Validation/Loss PLOT Updates
 
 # for displaying plot that dynamically updates within a loop
 from IPython import display
 
 # for displaying a legend
 import matplotlib.patches as mpatches
+
+# easy way to change figure size for this plot
+#from IPython.core.pylabtools import figsize
+# this doesn't work either
+
 
 # Initializations for Dynamic Plotting of training_stats during training
 
@@ -1004,6 +1010,7 @@ plt.gca().cla()
 #seems to have no effect on this chart..
 # figure size in inches: width, height    
 #fig = plt.figure(1, figsize=(7, 7))
+#figsize(14, 7)   # this doesn't work either
 
 # to display legend
 blue_patch  = mpatches.Patch(color='blue',  label='Validation Set')
@@ -1025,7 +1032,9 @@ def update_plot(plt, epoch_x_axis, vloss, tloss, vaccu, taccu):
     # that _should_ prevent flashing of plot. I did not get that method to work (yet)
     #  So I'm using "display" and plt.gca().cla()
  
-    fig = plt.figure(1, figsize=(15, 15))
+    #fig = plt.figure(1, figsize=(7, 7))
+    #figsize(14, 14)   # this doesn't work either
+    
     # prevent overlapping of labels with subplots
     plt.tight_layout()
 
@@ -1036,7 +1045,11 @@ def update_plot(plt, epoch_x_axis, vloss, tloss, vaccu, taccu):
     plt.subplot(312, title="% Accuracy vs Epoch, zoomed in ")
     plt.plot(epoch_x_axis, vaccu, 'b', epoch_x_axis, taccu, 'k')
     plt.axhline(req_accuracy, color='r')
-    plt.ylim((.9000, 1.0100))
+    #plt.ylim((.9000, 1.0100))
+    #determine scale for zoom
+    ymin = min(req_accuracy, vaccu[-1], taccu[-1]) * 0.8
+    ymax = max(req_accuracy, vaccu[-1], taccu[-1]) * 1.2
+    plt.ylim((ymin, ymax))
     
 
     plt.subplot(313, title="% Accuracy vs Epoch")
@@ -1057,10 +1070,10 @@ with tf.Session() as sess:
     num_examples = len(X_train)
     training_stats = []
     
-    print("Training...\n")
+    print("Training... for", EPOCHS, "Epochs\n")
     tstart = time.time()
     for epoch in range(1, EPOCHS+1):
-        print("EPOCH: ", epoch, "of", EPOCHS, "EPOCHS")
+#         print("EPOCH: ", epoch, "of", EPOCHS, "EPOCHS")
         X_train, y_train = shuffle(X_train, y_train)
         t0 = time.time()
         for batch_start in range(0, num_examples, BATCH_SIZE):
@@ -1074,19 +1087,20 @@ with tf.Session() as sess:
             #    print("        batch ", 1+batch_start//BATCH_SIZE, "of ", 1 + int(num_examples/BATCH_SIZE))#, "batches,  on EPOCH", epoch, "of", EPOCHS, "EPOCHS")
                       
         # evaluate on validation set, and print results of model from this EPOCH
-        print(X_valid.shape)
+#         print(X_valid.shape)
         validation_accuracy, validation_loss = evaluate_data(X_valid, y_valid)
         training_accuracy,   training_loss = evaluate_data(X_train, y_train)
         
         # TODO: would be awesome to display live charts of these results, rather than this text output
         # Text output does not work very well with dynamic plot (flashes off at every plot update/loop)
         # However, with slow nature of training, perhaps it won't be too bad.
-        print("Time: {:.3f} minutes".format(float( (time.time()-t0) / 60 )))
-        print("Validation Loss = {:.3f}".format(validation_loss))
-        print(" (Training Loss = {:.3f})".format(training_loss))
-        print("Validation Accuracy = {:.3f}".format(validation_accuracy))
-        print(" (Training Accuracy = {:.3f})".format(training_accuracy))
-        print()
+# Printing causes plot to be too small        
+#         print("Time: {:.3f} minutes".format(float( (time.time()-t0) / 60 )))
+#         print("Validation Loss = {:.3f}".format(validation_loss))
+#         print(" (Training Loss = {:.3f})".format(training_loss))
+#         print("Validation Accuracy = {:.3f}".format(validation_accuracy))
+#         print(" (Training Accuracy = {:.3f})".format(training_accuracy))
+#         print()
           
         # format for saving training_stats to datafile (each line is a new epoch)        
         training_stats.append([validation_loss, training_loss, validation_accuracy, training_accuracy])
@@ -1104,13 +1118,20 @@ with tf.Session() as sess:
         update_plot(plt, epoch_x_axis, vloss, tloss, vaccu, taccu)
         
     
+    # return to state the remaining notebook cells expect
+    get_ipython().magic('matplotlib inline')
     
     tend = time.time()
-    print("\nElapsed Training Time: {:.3f} minutes".format(float( (time.time()-tstart) / 60 )))
+    print("\nTotal Elapsed Training Time: {:.3f} minutes".format(float( (time.time()-tstart) / 60 )))
     
     # stats at timeof last EPOCH
+    print("Stats for EPOCH", epoch, ":")
+    print("Time: {:.3f} minutes".format(float( (time.time()-t0) / 60 )))
     print("Validation Loss = {:.3f}".format(validation_loss))
-    
+    print(" (Training Loss = {:.3f})".format(training_loss))
+    print("Validation Accuracy = {:.3f}".format(validation_accuracy))
+    print(" (Training Accuracy = {:.3f})".format(training_accuracy))
+    print()
     
     # use current time stamp as id for model and training_stats filenames
     model_timestamp = time.strftime("%y%m%d_%H%M")
@@ -1130,8 +1151,8 @@ with tf.Session() as sess:
 
 # model_timestamp for figure should match the timestamp from the model's file, not the current timestamp (see prev cell and top of this cell)
 plot_filename = './training_stats/training_stats_' + model_timestamp + '.png'
-fig.savefig(filename)  # results in 175x175 px image
-print("Figure saved as " + filename + "\n")
+fig.savefig(plot_filename)  # results in 175x175 px image
+print("Figure saved as " + plot_filename + "\n")
 
 # return to state the remaining notebook cells expect
 get_ipython().magic('matplotlib inline')
