@@ -21,6 +21,21 @@ def load_bottleneck_data(training_file, validation_file):
         training_file   - String
         validation_file - String
     """
+    """
+    Files to try:
+    NOTE: I moved all training sets to `training_sets` folder
+
+    {network}_{dataset}_100_bottleneck_features_train.p
+    {network}_{dataset}_bottleneck_features_validation.p
+
+    "network"in the above filenames, can be one of
+        'vgg',
+        'inception', or
+        'resnet'.
+    "dataset" can be either
+        'cifar10' or
+        'traffic'.
+    """
     print("Training file", training_file)
     print("Validation file", validation_file)
 
@@ -58,7 +73,7 @@ def main(_):
     train_shape = X_train.shape()
     image_shape = np.delete(train_shape,[0])
 
-    # TODO: train your model here
+    # DONE: train your model here
     model = Sequential()
     model.add(Flatten(input_shape=image_shape))
     model.add(Dense(128))                           # is this an appropriate number?
