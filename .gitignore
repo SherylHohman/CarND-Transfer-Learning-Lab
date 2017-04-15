@@ -2,3 +2,9 @@ data
 models
 .ipynb_checkpoints
 bottlenecks
+
+#SH 170415 added
+# bottleneck training sets for use with feature_extraction.py
+training_sets 
+# Traffic_Sign_Classifier.ipynb saves its models here   
+trained_models   
