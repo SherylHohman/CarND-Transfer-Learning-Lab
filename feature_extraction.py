@@ -1,6 +1,6 @@
 import pickle
 import tensorflow as tf
-# TODO: import Keras layers you need here
+# BELOW: import Keras layers you need here
 from keras.models import Sequential
 from keras.layers.core import Dense, Activation, Flatten
 
@@ -16,9 +16,8 @@ flags.DEFINE_string('network', '', "Bottleneck features training file (.p)")
 # 'cifar10', or 'traffic'
 flags.DEFINE_string('dataset', '', "Bottleneck features validation file (.p)")
 
-
 flags.DEFINE_string('batch_size', '', "batch size")
-flags.DEFINE_string('EPOCHS', '', "Epochs")
+flags.DEFINE_string('epochs', '', "EPOCHS")
 
 #def load_bottleneck_data(training_file, validation_file):
 def load_bottleneck_data(network, dataset):
@@ -76,20 +75,20 @@ def main(_):
     print(X_train.shape, y_train.shape)
     print(X_val.shape, y_val.shape)
 
-    # TODO: define your model and hyperparams here
+    # BELOW: define your model and hyperparams here
     # make sure to adjust the number of classes based on
     # the dataset
     # 10 for cifar10
     # 43 for traffic
-    EPOCHS =     5 #FLAGS.EPOCHS
-    batch_size = 128 #FLAGS.batch_size
+    EPOCHS =     int(FLAGS.epochs)
+    batch_size = int(FLAGS.batch_size)
     # sigma =
     # learning_rate =
     num_classes = len(y_train)
     train_shape = X_train.shape
     image_shape = train_shape[1:]
 
-    # DONE: train your model here
+    # BELOW: train your model here
     model = Sequential()
     model.add(Flatten(input_shape=image_shape))
     model.add(Dense(128))                           # 128 is this an appropriate number?
@@ -129,3 +128,21 @@ def main(_):
 # parses flags and calls the `main` function above
 if __name__ == '__main__':
     tf.app.run()
+
+
+"""
+Training Results:
+0s - loss: 0.8378 - acc: 0.6980
+Epoch 3000/3000
+0s - loss: 0.8560 - acc: 0.6830
+
+ERROR at end of training:
+<keras.callbacks.History object at 0x00000000076C4FD0>
+Exception ignored in: <bound method BaseSession.__del__ of <tensorflow.python.client.ses
+sion.Session object at 0x000000000773D668>>
+Traceback (most recent call last):
+  File "C:\Users\i\Anaconda3\envs\carnd-term1\lib\site-packages\tensorflow\python\client
+\session.py", line 581, in __del__
+AttributeError: 'NoneType' object has no attribute 'TF_DeleteStatus'
+(carnd-term1) i (dynamic_plotting *) CarND-Transfer-Learning-Lab $
+"""
