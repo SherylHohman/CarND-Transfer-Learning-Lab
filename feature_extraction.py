@@ -1,5 +1,6 @@
 import pickle
 import tensorflow as tf
+
 # BELOW: import Keras layers you need here
 import numpy as np
 from keras.models import Sequential
@@ -7,10 +8,6 @@ from keras.layers.core import Dense, Activation, Flatten
 
 flags = tf.app.flags
 FLAGS =        flags.FLAGS
-
-# command line flags
-# flags.DEFINE_string('training_file', '', "Bottleneck features training file (.p)")
-# flags.DEFINE_string('validation_file', '', "Bottleneck features validation file (.p)")
 
 # 'vgg', 'resnet', or 'inception'
 flags.DEFINE_string('network', 'vgg', "Bottleneck features training file (.p)")
@@ -27,9 +24,12 @@ def load_bottleneck_data(network, dataset):
     Arguments:
     #     network   - String
     #     dataset   - String
+
     Used to build the filenames for the training and validation files
-    """
-    """
+      {network}_{dataset}_100_bottleneck_features_train.p
+      {network}_{dataset}_bottleneck_features_validation.p
+
+    NOTE: I moved all training sets to `training_sets` folder
      "network"in the above filenames, can be one of
         'vgg',
         'inception', or
@@ -37,15 +37,9 @@ def load_bottleneck_data(network, dataset):
     "dataset" can be either
         'cifar10' or
         'traffic'.
-
-   Files to try:
-    NOTE: I moved all training sets to `training_sets` folder
-
-    {network}_{dataset}_100_bottleneck_features_train.p
-    {network}_{dataset}_bottleneck_features_validation.p
-
     """
-    # I moved the training files into a subdirectory for a cleaner root
+
+    # training files have been moved to a subdirectory for cleaner root
     training_sets_dir = './training_sets/'
 
     # build the training/validation file names from supplied flags
@@ -68,8 +62,6 @@ def load_bottleneck_data(network, dataset):
 
 
 def main(_):
-    # load bottleneck data
-    #X_train, y_train, X_val, y_val = load_bottleneck_data(FLAGS.training_file, FLAGS.validation_file)
 
     X_train, y_train, X_valid, y_valid = load_bottleneck_data(FLAGS.network, FLAGS.dataset)
 
@@ -77,8 +69,7 @@ def main(_):
     print(X_valid.shape, y_valid.shape)
 
     # BELOW: define your model and hyperparams here
-    # make sure to adjust the number of classes based on
-    # the dataset
+    # make sure to adjust the number of classes based on the dataset
     # 10 for cifar10
     # 43 for traffic
     EPOCHS =     int(FLAGS.epochs)
@@ -94,12 +85,13 @@ def main(_):
     # BELOW: train your model here
     model = Sequential()
     model.add(Flatten(input_shape=image_shape))
-    model.add(Dense(128))                         # 128 is this an appropriate number?
+    model.add(Dense(128))           # 128 is this an appropriate number?
     model.add(Activation('relu'))
     model.add(Dense(num_classes))
     model.add(Activation('softmax'))
 
     # preprocess
+    # preprocessing gave terrible results: > 10,000 Epochs to train
     #X_normalized = np.array( (X_train/255.0) - 0.5 )
 
     # one hot encoding
@@ -114,14 +106,13 @@ def main(_):
 
     # from keras.utils import np_utils
     # y_one_hot = np_utils.to_categorical(y_train, num_classes)
-    # print(y_one_hot.shape, 'shape after np_utils\n') #(10000, 1000)
+    # print(y_one_hot.shape, 'shape after np_utils\n')
 
     # train
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
     history = model.fit(X_train, y_train_one_hot, validation_data=(X_valid, y_valid_one_hot), shuffle=True, nb_epoch=EPOCHS, batch_size=batch_size, verbose=2)
-    # history = model.fit(X_normalized, y_one_hot, shuffle=True, nb_epoch=EPOCHS, batch_size=batch_size, verbose=2)
-
+ 
 
     print(history)
 
@@ -131,31 +122,7 @@ def main(_):
 if __name__ == '__main__':
     tf.app.run()
 
-
-
-    # Training Results:
-    # 0s - loss: 0.8378 - acc: 0.6980
-    # Epoch 3000/3000
-    # 0s - loss: 0.8560 - acc: 0.6830
-
-    # ERROR at end of training:
-    # <keras.callbacks.History object at 0x00000000076C4FD0>
-    # Exception ignored in: <bound method BaseSession.__del__ of <tensorflow.python.client.session.Session object at 0x000000000773D668>>
-    # Traceback (most recent call last):
-    #   File "C:\Users\i\Anaconda3\envs\carnd-term1\lib\site-packages\tensorflow\python\client\session.py", line 581, in __del__
-    # AttributeError: 'NoneType' object has no attribute 'TF_DeleteStatus'
-
-#     Epoch 10000/10000
-#     0s - loss: 0.4135 - acc: 0.8640
-#other version:
-    # Epoch 10000/10000
-    # 0s - loss: 0.6913 - acc: 0.7630
-    # <keras.callbacks.History object at 0x00000000076C1748>
-# <keras.callbacks.History object at 0x00000000076C3780>
-
-# Something must be wrong as solution has accuracy ~ 85% at 50 epochs
-# current version achieves accuracy 1.000 at epoch 16
-
+# TRAINING RESULTS:
 # _network_ _dataset_                 validation loss   valida accuracy
 # _vgg___   _cifar10_
 #Epoch 50   loss: 0.0098 acc: 1.0000  val_loss: 0.8692  val_acc: 0.7603
