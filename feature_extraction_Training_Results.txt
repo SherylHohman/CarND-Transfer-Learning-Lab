@@ -1,0 +1,23 @@
+# TRAINING RESULTS:
+# _network_ _dataset_                 validation loss   valida accuracy
+# _vgg___   _cifar10_
+#Epoch 50   loss: 0.0098 acc: 1.0000  val_loss: 0.8692  val_acc: 0.7603
+#Epoch 23   loss: 0.0307 acc: 0.9988  val_loss: 0.3904  val_acc: 0.8791
+# _vgg___   _traffic_
+#Epoch 50   loss: 0.0046 acc: 1.0000  val_loss: 0.3944  val_acc: 0.8865
+#Epoch 31   loss: 0.0145 acc: 1.0000  val_loss: 0.3831  val_acc: 0.8828
+# _resnet_  _cifar10_
+#Epoch 50   loss: 0.0031 acc: 1.0000  val_loss: 0.9856  val_acc: 0.7420
+#Epoch 11   loss: 0.0539 acc: 1.0000  val_loss: 0.8184  val_acc: 0.7376
+# _resnet_  _traffic_
+#Epoch 50   loss: 0.0032 acc: 1.0000  val_loss: 0.6684  val_acc: 0.8104
+#Epoch 16   loss: 0.0370 acc: 1.0000  val_loss: 0.6383  val_acc: 0.8023
+# _inception__cifar10_
+#Epoch 50   loss: 0.0025 acc: 1.0000  val_loss: 1.2242  val_acc: 0.6656
+#Epoch  8   loss: 0.0768 acc: 1.0000  val_loss: 1.0226  val_acc: 0.6614
+# _inception__traffic_
+#Epoch 50   loss: 0.0016 acc: 1.0000  val_loss: 0.9360  val_acc: 0.7436
+#Epoch 10   loss: 0.0448 acc: 1.0000  val_loss: 0.8962  val_acc: 0.7260
+#(1Dense,E50)loss:0.0134 acc: 1.0000  val_loss: 0.8384  val_acc: 0.7555
+
+feature_extraction.py
