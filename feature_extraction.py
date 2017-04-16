@@ -1,41 +1,56 @@
 import pickle
 import tensorflow as tf
 # TODO: import Keras layers you need here
-from keras.Models import Sequential
+from keras.models import Sequential
 from keras.layers.core import Dense, Activation, Flatten
 
 flags = tf.app.flags
 FLAGS =        flags.FLAGS
 
 # command line flags
-flags.DEFINE_string('training_file', '', "Bottleneck features training file (.p)")
-flags.DEFINE_string('validation_file', '', "Bottleneck features validation file (.p)")
+# flags.DEFINE_string('training_file', '', "Bottleneck features training file (.p)")
+# flags.DEFINE_string('validation_file', '', "Bottleneck features validation file (.p)")
+
+# 'vgg', 'resnet', or 'inception'
+flags.DEFINE_string('network', '', "Bottleneck features training file (.p)")
+# 'cifar10', or 'traffic'
+flags.DEFINE_string('dataset', '', "Bottleneck features validation file (.p)")
+
+
 flags.DEFINE_string('batch_size', '', "batch size")
 flags.DEFINE_string('EPOCHS', '', "Epochs")
 
-def load_bottleneck_data(training_file, validation_file):
+#def load_bottleneck_data(training_file, validation_file):
+def load_bottleneck_data(network, dataset):
     """
     Utility function to load bottleneck features.
-
     Arguments:
-        training_file   - String
-        validation_file - String
+    #     network   - String
+    #     dataset   - String
+    Used to build the filenames for the training and validation files
     """
     """
-    Files to try:
-    NOTE: I moved all training sets to `training_sets` folder
-
-    {network}_{dataset}_100_bottleneck_features_train.p
-    {network}_{dataset}_bottleneck_features_validation.p
-
-    "network"in the above filenames, can be one of
+     "network"in the above filenames, can be one of
         'vgg',
         'inception', or
         'resnet'.
     "dataset" can be either
         'cifar10' or
         'traffic'.
+
+   Files to try:
+    NOTE: I moved all training sets to `training_sets` folder
+
+    {network}_{dataset}_100_bottleneck_features_train.p
+    {network}_{dataset}_bottleneck_features_validation.p
+
     """
+    # I moved the training files into a subdirectory for a cleaner root
+    training_sets_dir = './training_sets/'
+
+    # build the training/validation file names from supplied flags
+    training_file   = training_sets_dir + network + '_' + dataset + '_100_bottleneck_features_train.p'
+    validation_file = training_sets_dir + network + '_' + dataset + '_bottleneck_features_validation.p'
     print("Training file", training_file)
     print("Validation file", validation_file)
 
@@ -54,8 +69,9 @@ def load_bottleneck_data(training_file, validation_file):
 
 def main(_):
     # load bottleneck data
-    X_train, y_train, X_val, y_val = load_bottleneck_data(FLAGS.training_file,
-                                                          FLAGS.validation_file)
+    #X_train, y_train, X_val, y_val = load_bottleneck_data(FLAGS.training_file, FLAGS.validation_file)
+
+    X_train, y_train, X_val, y_val = load_bottleneck_data(FLAGS.network, FLAGS.dataset)
 
     print(X_train.shape, y_train.shape)
     print(X_val.shape, y_val.shape)
