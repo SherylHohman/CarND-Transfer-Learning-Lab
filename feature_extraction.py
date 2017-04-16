@@ -86,8 +86,8 @@ def main(_):
     # sigma =
     # learning_rate =
     num_classes = len(y_train)
-    train_shape = X_train.shape()
-    image_shape = np.delete(train_shape,[0])
+    train_shape = X_train.shape
+    image_shape = train_shape[1:]
 
     # DONE: train your model here
     model = Sequential()
@@ -98,18 +98,20 @@ def main(_):
     model.add(Activation('softmax'))
 
     # preprocess
+    import numpy as np
     X_normalized = np.array( (X_train/255.0) - 0.5 )
 
     # one hot encoding
     from sklearn.preprocessing import LabelBinarizer
 
     label_binarizer = LabelBinarizer()
-    y_one_hot = label_binerizer.fit_transform(y_train)
+    y_one_hot = label_binarizer.fit_transform(y_train)
 
     # train
-    model.train('adam', 'categorical_crossentropy', ['accuracy'])
+    model.compile('adam', 'categorical_crossentropy', ['accuracy'])
 
-    history = model.fit(X_normalized, y_one_hot, nb_epoch=EPOCHS, validation_split=0.2)
+    # history = model.fit(X_normalized, y_one_hot, nb_epoch=EPOCHS, validation_split=0.2)
+    history = model.fit(X_normalized, y_one_hot, nb_epoch=EPOCHS)
 
     print(history)
 
