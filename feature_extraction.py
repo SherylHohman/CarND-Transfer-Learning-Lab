@@ -83,42 +83,42 @@ def main(_):
     # 43 for traffic
     EPOCHS =     int(FLAGS.epochs)
     batch_size = int(FLAGS.batch_size)
-    # sigma =
-    # learning_rate =
+    print("EPOCHS", EPOCHS, 'batch_size', batch_size)
+
     num_classes = len(np.unique(y_train))
+    print(num_classes, 'num_classes')
+
     train_shape = X_train.shape
     image_shape = train_shape[1:]
 
     # BELOW: train your model here
     model = Sequential()
     model.add(Flatten(input_shape=image_shape))
-    model.add(Dense(128))                           # 128 is this an appropriate number?
+    model.add(Dense(128))                         # 128 is this an appropriate number?
     model.add(Activation('relu'))
     model.add(Dense(num_classes))
     model.add(Activation('softmax'))
 
     # preprocess
-    X_normalized = np.array( (X_train/255.0) - 0.5 )
+    #X_normalized = np.array( (X_train/255.0) - 0.5 )
 
     # one hot encoding
     from sklearn.preprocessing import LabelBinarizer
+    label_binarizer = LabelBinarizer()
 
-    print(y_train.shape, 'shape y_train')           # (1000, 1)
-    # label_binarizer = LabelBinarizer()
-    # y_one_hot = label_binarizer.fit_transform(y_train)
-    # print(y_one_hot.shape, 'shape y_one_hot')       # (1000, 10)
-    ## Above results in the following error message:
-    # ValueError: Error when checking model target: expected activation_2 to have shape (None,1000) but got array with shape (1000, 10)
+    print(y_train.shape,   'shape y_train')
+    y_one_hot = label_binarizer.fit_transform(y_train)
+    print(y_one_hot.shape, 'shape y_one_hot')
 
-    from keras.utils import np_utils
-    y_one_hot = np_utils.to_categorical(y_train, num_classes)
-    print(y_one_hot.shape, 'shape after np_utils\n') #(10000, 1000)
+    # from keras.utils import np_utils
+    # y_one_hot = np_utils.to_categorical(y_train, num_classes)
+    # print(y_one_hot.shape, 'shape after np_utils\n') #(10000, 1000)
 
     # train
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-    # history = model.fit(X_normalized, y_one_hot, nb_epoch=EPOCHS, validation_split=0.2)
-    history = model.fit(X_normalized, y_one_hot, shuffle=True, nb_epoch=EPOCHS, batch_size=batch_size, verbose=2)
+    history = model.fit(X_train, y_one_hot, shuffle=True, nb_epoch=EPOCHS, batch_size=batch_size, verbose=2)
+    # history = model.fit(X_normalized, y_one_hot, shuffle=True, nb_epoch=EPOCHS, batch_size=batch_size, verbose=2)
 
 
     print(history)
@@ -143,3 +143,14 @@ if __name__ == '__main__':
     #   File "C:\Users\i\Anaconda3\envs\carnd-term1\lib\site-packages\tensorflow\python\client\session.py", line 581, in __del__
     # AttributeError: 'NoneType' object has no attribute 'TF_DeleteStatus'
 
+#     Epoch 10000/10000
+#     0s - loss: 0.4135 - acc: 0.8640
+#other version:
+    # Epoch 10000/10000
+    # 0s - loss: 0.6913 - acc: 0.7630
+    # <keras.callbacks.History object at 0x00000000076C1748>
+# <keras.callbacks.History object at 0x00000000076C3780>
+
+# current version achieves accuracy 1.000 at epoch 16
+# and by epoch 50: loss 0.0100, acc: 1.000
+#Something must be wrong as solution has accuracy ~ 85% at 50 epochs
