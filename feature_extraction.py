@@ -13,12 +13,12 @@ FLAGS =        flags.FLAGS
 # flags.DEFINE_string('validation_file', '', "Bottleneck features validation file (.p)")
 
 # 'vgg', 'resnet', or 'inception'
-flags.DEFINE_string('network', '', "Bottleneck features training file (.p)")
+flags.DEFINE_string('network', 'vgg', "Bottleneck features training file (.p)")
 # 'cifar10', or 'traffic'
-flags.DEFINE_string('dataset', '', "Bottleneck features validation file (.p)")
+flags.DEFINE_string('dataset', 'cifar10', "Bottleneck features validation file (.p)")
 
-flags.DEFINE_string('batch_size', '', "batch size")
-flags.DEFINE_string('epochs', '', "EPOCHS")
+flags.DEFINE_string('batch_size', '128', "batch size")
+flags.DEFINE_string('epochs', '50', "EPOCHS")
 
 #def load_bottleneck_data(training_file, validation_file):
 def load_bottleneck_data(network, dataset):
