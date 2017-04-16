@@ -1,6 +1,7 @@
 import pickle
 import tensorflow as tf
 # BELOW: import Keras layers you need here
+import numpy as np
 from keras.models import Sequential
 from keras.layers.core import Dense, Activation, Flatten
 
@@ -84,7 +85,7 @@ def main(_):
     batch_size = int(FLAGS.batch_size)
     # sigma =
     # learning_rate =
-    num_classes = len(y_train)
+    num_classes = len(np.unique(y_train))
     train_shape = X_train.shape
     image_shape = train_shape[1:]
 
@@ -97,7 +98,6 @@ def main(_):
     model.add(Activation('softmax'))
 
     # preprocess
-    import numpy as np
     X_normalized = np.array( (X_train/255.0) - 0.5 )
 
     # one hot encoding
@@ -130,19 +130,16 @@ if __name__ == '__main__':
     tf.app.run()
 
 
-"""
-Training Results:
-0s - loss: 0.8378 - acc: 0.6980
-Epoch 3000/3000
-0s - loss: 0.8560 - acc: 0.6830
 
-ERROR at end of training:
-<keras.callbacks.History object at 0x00000000076C4FD0>
-Exception ignored in: <bound method BaseSession.__del__ of <tensorflow.python.client.ses
-sion.Session object at 0x000000000773D668>>
-Traceback (most recent call last):
-  File "C:\Users\i\Anaconda3\envs\carnd-term1\lib\site-packages\tensorflow\python\client
-\session.py", line 581, in __del__
-AttributeError: 'NoneType' object has no attribute 'TF_DeleteStatus'
-(carnd-term1) i (dynamic_plotting *) CarND-Transfer-Learning-Lab $
-"""
+    # Training Results:
+    # 0s - loss: 0.8378 - acc: 0.6980
+    # Epoch 3000/3000
+    # 0s - loss: 0.8560 - acc: 0.6830
+
+    # ERROR at end of training:
+    # <keras.callbacks.History object at 0x00000000076C4FD0>
+    # Exception ignored in: <bound method BaseSession.__del__ of <tensorflow.python.client.session.Session object at 0x000000000773D668>>
+    # Traceback (most recent call last):
+    #   File "C:\Users\i\Anaconda3\envs\carnd-term1\lib\site-packages\tensorflow\python\client\session.py", line 581, in __del__
+    # AttributeError: 'NoneType' object has no attribute 'TF_DeleteStatus'
+
