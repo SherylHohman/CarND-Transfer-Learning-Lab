@@ -51,7 +51,7 @@ def load_bottleneck_data(network, dataset):
     # build the training/validation file names from supplied flags
     training_file   = training_sets_dir + network + '_' + dataset + '_100_bottleneck_features_train.p'
     validation_file = training_sets_dir + network + '_' + dataset + '_bottleneck_features_validation.p'
-    print("Training file", training_file)
+    print("Training file  ", training_file)
     print("Validation file", validation_file)
 
     with open(training_file,   'rb') as f:
@@ -108,7 +108,7 @@ def main(_):
 
     print(y_train.shape,   'shape y_train')
     y_one_hot = label_binarizer.fit_transform(y_train)
-    print(y_one_hot.shape, 'shape y_one_hot')
+    print(y_one_hot.shape, 'shape y_one_hot\n')
 
     # from keras.utils import np_utils
     # y_one_hot = np_utils.to_categorical(y_train, num_classes)
@@ -151,6 +151,16 @@ if __name__ == '__main__':
     # <keras.callbacks.History object at 0x00000000076C1748>
 # <keras.callbacks.History object at 0x00000000076C3780>
 
+# Something must be wrong as solution has accuracy ~ 85% at 50 epochs
 # current version achieves accuracy 1.000 at epoch 16
-# and by epoch 50: loss 0.0100, acc: 1.000
-#Something must be wrong as solution has accuracy ~ 85% at 50 epochs
+
+#          network     dataset          loss    accuracy     **     *
+#epoch 50:  vgg        cifar10   loss  0.0100  acc: 1.0000  (16) (.0749)
+#epoch 50:  vgg        traffic   loss: 0.0043  acc: 1.0000  (32) (.0157)
+#epoch 50:  resnet     cifar10   loss: 0.0035  acc: 1.0000  (12) (.0472)
+#epoch 50:  resnet     traffic   loss: 0.0028  acc: 1.0000  (13) (.0480)
+#epoch 50:  inception  cifar10   loss: 0.0024  acc: 1.0000  (10) (.0449)
+#epoch 50:  inception  traffic   loss: 0.0016  acc: 1.0000  ( 8) (.0758)
+
+# **(epoch reached 1.0 accuracy)
+# * (loss at that epoch)
