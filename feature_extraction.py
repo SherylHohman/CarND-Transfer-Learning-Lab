@@ -61,20 +61,20 @@ def load_bottleneck_data(network, dataset):
 
     X_train = train_data['features']
     y_train = train_data['labels']
-    X_val   = validation_data['features']
-    y_val   = validation_data['labels']
+    X_valid = validation_data['features']
+    y_valid = validation_data['labels']
 
-    return X_train, y_train, X_val, y_val
+    return X_train, y_train, X_valid, y_valid
 
 
 def main(_):
     # load bottleneck data
     #X_train, y_train, X_val, y_val = load_bottleneck_data(FLAGS.training_file, FLAGS.validation_file)
 
-    X_train, y_train, X_val, y_val = load_bottleneck_data(FLAGS.network, FLAGS.dataset)
+    X_train, y_train, X_valid, y_valid = load_bottleneck_data(FLAGS.network, FLAGS.dataset)
 
     print(X_train.shape, y_train.shape)
-    print(X_val.shape, y_val.shape)
+    print(X_valid.shape, y_valid.shape)
 
     # BELOW: define your model and hyperparams here
     # make sure to adjust the number of classes based on
@@ -107,8 +107,10 @@ def main(_):
     label_binarizer = LabelBinarizer()
 
     print(y_train.shape,   'shape y_train')
-    y_one_hot = label_binarizer.fit_transform(y_train)
-    print(y_one_hot.shape, 'shape y_one_hot\n')
+    y_train_one_hot = label_binarizer.fit_transform(y_train)
+    print(y_train_one_hot.shape, 'shape y_train_one_hot\n')
+    y_valid_one_hot = label_binarizer.fit_transform(y_valid)
+    print(y_valid_one_hot.shape, 'shape y_valid_one_hot\n')
 
     # from keras.utils import np_utils
     # y_one_hot = np_utils.to_categorical(y_train, num_classes)
@@ -117,7 +119,7 @@ def main(_):
     # train
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-    history = model.fit(X_train, y_one_hot, shuffle=True, nb_epoch=EPOCHS, batch_size=batch_size, verbose=2)
+    history = model.fit(X_train, y_train_one_hot, validation_data=(X_valid, y_valid_one_hot), shuffle=True, nb_epoch=EPOCHS, batch_size=batch_size, verbose=2)
     # history = model.fit(X_normalized, y_one_hot, shuffle=True, nb_epoch=EPOCHS, batch_size=batch_size, verbose=2)
 
 
@@ -154,13 +156,23 @@ if __name__ == '__main__':
 # Something must be wrong as solution has accuracy ~ 85% at 50 epochs
 # current version achieves accuracy 1.000 at epoch 16
 
-#          network     dataset          loss    accuracy     **     *
-#epoch 50:  vgg        cifar10   loss  0.0100  acc: 1.0000  (16) (.0749)
-#epoch 50:  vgg        traffic   loss: 0.0043  acc: 1.0000  (32) (.0157)
-#epoch 50:  resnet     cifar10   loss: 0.0035  acc: 1.0000  (12) (.0472)
-#epoch 50:  resnet     traffic   loss: 0.0028  acc: 1.0000  (13) (.0480)
-#epoch 50:  inception  cifar10   loss: 0.0024  acc: 1.0000  (10) (.0449)
-#epoch 50:  inception  traffic   loss: 0.0016  acc: 1.0000  ( 8) (.0758)
-
-# **(epoch reached 1.0 accuracy)
-# * (loss at that epoch)
+# _network_ _dataset_                 validation loss   valida accuracy
+# _vgg___   _cifar10_
+#Epoch 50   loss: 0.0098 acc: 1.0000  val_loss: 0.8692  val_acc: 0.7603
+#Epoch 23   loss: 0.0307 acc: 0.9988  val_loss: 0.3904  val_acc: 0.8791
+# _vgg___   _traffic_
+#Epoch 50   loss: 0.0046 acc: 1.0000  val_loss: 0.3944  val_acc: 0.8865
+#Epoch 31   loss: 0.0145 acc: 1.0000  val_loss: 0.3831  val_acc: 0.8828
+# _resnet_  _cifar10_
+#Epoch 50   loss: 0.0031 acc: 1.0000  val_loss: 0.9856  val_acc: 0.7420
+#Epoch 11   loss: 0.0539 acc: 1.0000  val_loss: 0.8184  val_acc: 0.7376
+# _resnet_  _traffic_
+#Epoch 50   loss: 0.0032 acc: 1.0000  val_loss: 0.6684  val_acc: 0.8104
+#Epoch 16   loss: 0.0370 acc: 1.0000  val_loss: 0.6383  val_acc: 0.8023
+# _inception__cifar10_
+#Epoch 50   loss: 0.0025 acc: 1.0000  val_loss: 1.2242  val_acc: 0.6656
+#Epoch  8   loss: 0.0768 acc: 1.0000  val_loss: 1.0226  val_acc: 0.6614
+# _inception__traffic_
+#Epoch 50   loss: 0.0016 acc: 1.0000  val_loss: 0.9360  val_acc: 0.7436
+#Epoch 10   loss: 0.0448 acc: 1.0000  val_loss: 0.8962  val_acc: 0.7260
+#(1Dense,E50)loss:0.0134 acc: 1.0000  val_loss: 0.8384  val_acc: 0.7555
