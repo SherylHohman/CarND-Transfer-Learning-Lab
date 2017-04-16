@@ -105,15 +105,15 @@ def main(_):
     from sklearn.preprocessing import LabelBinarizer
 
     print(y_train.shape, 'shape y_train')           # (1000, 1)
-    label_binarizer = LabelBinarizer()
-    y_one_hot = label_binarizer.fit_transform(y_train)
-    print(y_one_hot.shape, 'shape y_one_hot')       # (1000, 10)
-    from keras.utils import np_utils
+    # label_binarizer = LabelBinarizer()
+    # y_one_hot = label_binarizer.fit_transform(y_train)
+    # print(y_one_hot.shape, 'shape y_one_hot')       # (1000, 10)
+    ## Above results in the following error message:
+    # ValueError: Error when checking model target: expected activation_2 to have shape (None,1000) but got array with shape (1000, 10)
 
-    y_one_hot = np_utils.to_categorical(y_one_hot, num_classes)
+    from keras.utils import np_utils
+    y_one_hot = np_utils.to_categorical(y_train, num_classes)
     print(y_one_hot.shape, 'shape after np_utils\n') #(10000, 1000)
-    # Now I get error:
-    # ValueError: Input arrays should have the same number of samples as target arrays. Found 1000 input samples and 10000 target samples.
 
     # train
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
@@ -121,8 +121,6 @@ def main(_):
     # history = model.fit(X_normalized, y_one_hot, nb_epoch=EPOCHS, validation_split=0.2)
     history = model.fit(X_normalized, y_one_hot, shuffle=True, nb_epoch=EPOCHS, batch_size=batch_size, verbose=2)
 
-    ## Getting following error message:
-    # ValueError: Error when checking model target: expected activation_2 to have shape (None,1000) but got array with shape (1000, 10)
 
     print(history)
 
